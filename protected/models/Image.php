@@ -10,7 +10,7 @@
  * @property integer $uploader
  *
  * The followings are the available model relations:
- * @property Admin $uploader0
+ * @property User $id
  */
 class Image extends CActiveRecord
 {
@@ -48,7 +48,7 @@ class Image extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'uploader0' => array(self::BELONGS_TO, 'Admin', 'uploader'),
+			'id0' => array(self::BELONGS_TO, 'User','id'),
 		);
 	}
 

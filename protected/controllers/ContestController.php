@@ -74,7 +74,7 @@ class ContestController extends Controller
 			//dua ini gw special case karena males banget (pake jquery dia)
 			//bisa jadi loophole security (misal kebanyakan diklik. tapi enggak lah ya)
 			array('allow',
-				'actions'=>array('loadProblem','submitAnswer'),
+				'actions'=>array('loadProblem','submitAnswer','loadProblemWithAjax'),
 				'users'=>array('@'),
 			),
 			//hanya apporved
@@ -277,6 +277,7 @@ class ContestController extends Controller
 	 * mengerjakan problem
 	 * @param id number contest_id
 	 */
+	/*
 	public function actionProblem($id) {
 		if (!Self::userAuthenticated($id)){
 			$this->redirect(array('view','id'=>$id));
@@ -305,7 +306,7 @@ class ContestController extends Controller
 			'contestSubId'=>$contestSubId,
 			'endTime'=>$contestSubModel->end_time,
 		));
-	}
+	}*/
 
 	/**
 	 * memulai kontes.
@@ -818,61 +819,101 @@ class ContestController extends Controller
 		$this->redirect(array('contestant', 'id'=>$contestId));
 	}
 
-
-
-	/**
-	 * return the problem model in JSON
-	 */
-	public function actionLoadProblem(){
-		$problemId = $_POST['pid']; //$_POST['pid']; //cara ngedebug, ganti $_POST jadi suatu problem_id
-		//$problemId = 52;
-		$problem = Problem::model()->findByPk($problemId);
-		$joinTable;
-		switch ($problem->type) {
-			case Problem::MULTIPLE_CHOICE:
-				$joinTable = 'problemChoice';
-				break;
-			case Problem::SHORT_ANSWER:
-				$joinTable = 'problemShort';
-			case Problem::ESSAY:
-				$joinTable = 'problemEssay';
-			default:
-				# code...
-				break;
+	public function actionProblem($id){
+		$model = $this->loadModel($id);
+		if ($model == null){
+			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
-		$problem = Problem::model()->with($joinTable)->findByPk($problemId);
-		echo json_encode($problem->convertToArray());
+		$problemList = $model->getAllProblem();
+		$this->render('contestant/problem', array(
+			'problemList'=>$problemList,
+			'model' =>$model,
+			'numberOfProblems'=>count($problemList),
+		));
 	}
-	/**
-	 * 
-	 */
-	public function actionSubmitAnswer(){
-		$problemId = $_POST['pid'];
-		$contestSubId = $_POST['contestSubId'];
-		$answer = $_POST['value'];
-		//echo json_encode($_POST);
-		//debug code. jangan dihapus. gw suka kelupaan.
-		//$problemId = 52;
-		//$contestSubId = 35;
-		//$answer = 1;
-		if ($contestSubId != null){
-			$model = Submission::model()->find('problem_id=:pid AND contest_submission_id=:csid',array('pid'=>$problemId,'csid'=>$contestSubId));	
-			if ($model == null){
-				$model = new Submission;
-				$model->problem_id = $problemId;
-				$model->contest_submission_id  = $contestSubId;
-				$model->answer = $answer;
-				$model->save();
-			} else {
-				$model->answer = $answer;
-				$model->save();
-			}
+
+	public function actionLoadProblemWithAjax($contestId,$problemId = 0,$indexNo){
+		if ($problemId != 0){
+		 	$joinTable;
+		 	$problem = Problem::model()->findByPk($problemId);
+		 	switch ($problem->type) {
+		 		case Problem::MULTIPLE_CHOICE:
+		 			$joinTable = 'problemChoice';
+		 			break;
+		 		case Problem::SHORT_ANSWER:
+					$joinTable = 'problemShort';
+					break;
+				case Problem::ESSAY:
+					$joinTable = 'problemEssay';
+					break;
+				default:
+					# code...
+					break;
+		 	}
+		 	$problem = Problem::model()->with($joinTable)->findByPk($problemId);
+		 	if ($problem->contest_id == $contestId){
+		 		$this->renderPartial('contestant/_loadProblemGeneral',array('problem'=>$problem,'indexNo'=>$indexNo));
+		 	}
+		}
+	}
+	public function actionSubmitAnswer($contestId){
+		if (isset($contestId)){
 			
-			//$model->save();
-			echo json_encode(array('ok'));
-			//echo json_encode(array('result'=>$model->save()));
 		}
 	}
+	// /**
+	//  * return the problem model in JSON
+	//  */
+	// public function actionLoadProblem(){
+	// 	$problemId = $_POST['pid']; //$_POST['pid']; //cara ngedebug, ganti $_POST jadi suatu problem_id
+	// 	//$problemId = 52;
+	// 	$problem = Problem::model()->findByPk($problemId);
+	// 	$joinTable;
+	// 	switch ($problem->type) {
+	// 		case Problem::MULTIPLE_CHOICE:
+	// 			$joinTable = 'problemChoice';
+	// 			break;
+	// 		case Problem::SHORT_ANSWER:
+	// 			$joinTable = 'problemShort';
+	// 		case Problem::ESSAY:
+	// 			$joinTable = 'problemEssay';
+	// 		default:
+	// 			# code...
+	// 			break;
+	// 	}
+	// 	$problem = Problem::model()->with($joinTable)->findByPk($problemId);
+	// 	echo json_encode($problem->convertToArray());
+	// }
+	// /**
+	//  * 
+	//  */
+	// public function actionSubmitAnswer(){
+	// 	$problemId = $_POST['pid'];
+	// 	$contestSubId = $_POST['contestSubId'];
+	// 	$answer = $_POST['value'];
+	// 	//echo json_encode($_POST);
+	// 	//debug code. jangan dihapus. gw suka kelupaan.
+	// 	//$problemId = 52;
+	// 	//$contestSubId = 35;
+	// 	//$answer = 1;
+	// 	if ($contestSubId != null){
+	// 		$model = Submission::model()->find('problem_id=:pid AND contest_submission_id=:csid',array('pid'=>$problemId,'csid'=>$contestSubId));	
+	// 		if ($model == null){
+	// 			$model = new Submission;
+	// 			$model->problem_id = $problemId;
+	// 			$model->contest_submission_id  = $contestSubId;
+	// 			$model->answer = $answer;
+	// 			$model->save();
+	// 		} else {
+	// 			$model->answer = $answer;
+	// 			$model->save();
+	// 		}
+			
+	// 		//$model->save();
+	// 		echo json_encode(array('ok'));
+	// 		//echo json_encode(array('result'=>$model->save()));
+	// 	}
+	// }
 
 	/**
 	 * return the administrator status of logged in user
