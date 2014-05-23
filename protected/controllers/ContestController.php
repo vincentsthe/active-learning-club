@@ -49,7 +49,7 @@ class ContestController extends Controller
 			),
 			//hak khusus untuk admin : boleh melakukan apapun
 			array('allow',
-				'actions'=>array('register','delete','view','create','update','scoring','grading','contestant','updateContestProblem','viewContestProblem', 'removeContestant', 'addContestant','grading'),
+				'actions'=>array('register','delete','view','create','update','scoring','grading','contestant','updateContestProblem','viewContestProblem', 'removeContestant', 'addContestant','grading','image'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isAdmin'),
 			),
@@ -61,20 +61,20 @@ class ContestController extends Controller
 			),
 			//hanya approved teacher yang boleh melakukan
 			array('allow',
-				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading'),
+				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading','image'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedTeacher'),
 			),
 			//kontestan dan manager yang approved yang boleh melakukan
 			array('allow',
-				'actions'=>array('start','news','problem','scoreboard'),
+				'actions'=>array('start','news','problem','scoreboard','image'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedContestant'),
 			),
 			//dua ini gw special case karena males banget (pake jquery dia)
 			//bisa jadi loophole security (misal kebanyakan diklik. tapi enggak lah ya)
 			array('allow',
-				'actions'=>array('loadProblem','submitAnswer','loadProblemWithAjax'),
+				'actions'=>array('loadProblem','submitAnswer','loadProblemWithAjax','image'),
 				'users'=>array('@'),
 			),
 			//hanya apporved
@@ -956,6 +956,66 @@ class ContestController extends Controller
 			return false;
 		}
 		
+	}
+	
+	public function actionImage($id)
+	{
+		$contest = Contest::model()->findByPk($id);
+	
+		if(isset($_GET['renderImage'])) {
+			ob_clean();
+			$filename = $_GET['renderImage'];
+			$filepath = Utilities::getUploadedImagePath() . $_GET['renderImage'];
+			header('Content-Type: '. CFileHelper::getMimeType($filepath));
+			header('Content-Length: ' . filesize($filepath));
+			header('Content-Disposition: attachment; filename="' . $filename . '"');
+			readfile($filepath);
+			exit;
+		}
+	
+		$criteria = new CDbCriteria;
+		
+		$criteria->condition = "contest_id=" . $id;
+	
+		$dataProvider=new CActiveDataProvider('Image', array(
+				'criteria'=>$criteria,
+				'sort'=>array(
+						'defaultOrder'=>'id DESC',
+				),
+				'pagination'=>array(
+						'pageSize'=>20,
+				)
+		));
+	
+		$imageForm = new ImageForm;
+	
+		if(isset($_POST['ImageForm'])) {
+			$imageForm->attributes = $_POST['ImageForm'];
+			$imageForm->image = CUploadedFile::getInstance($imageForm, 'image');
+				
+			if($imageForm->validate()) {
+				$image = new Image;
+				$image->uploader = Yii::app()->user->id;
+				$image->token = Utilities::generateToken(64);
+				$image->name = $imageForm->image->getName();
+				$image->contest_id = $id;
+	
+				if($image->save()) {
+					$imageForm->image->saveAs(Utilities::getUploadedImagePath() . $image->token);
+				} else {
+					Yii::app()->user->setFlash('error', 'Terjadi error.');
+				}
+			} else {
+				Yii::app()->user->setFlash('error', 'File image tidak valid,');
+			}
+				
+		}
+	
+		$this->render('image',array(
+				'dataProvider'=>$dataProvider,
+				'imageForm'=>$imageForm,
+				'model'=>$contest,
+		));
 	}
 	
 }

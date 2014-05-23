@@ -41,6 +41,7 @@ return array(
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
+				'contest/<id:\d+>/<action>'=>'contest/<action>',
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
@@ -56,7 +57,7 @@ return array(
 			'connectionString' => 'mysql:host=localhost;dbname=db_alc',
 			'emulatePrepare' => true,
 			'username' => 'root',
-			'password' => 'akuganteng',
+			'password' => 'rahasia',
 			'charset' => 'utf8',
 		),
 		'errorHandler'=>array(
