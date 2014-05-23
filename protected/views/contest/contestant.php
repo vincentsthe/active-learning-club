@@ -23,15 +23,16 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 				<td><?php echo $contestUser->user->username; ?></td>
 				<td><?php echo $contestUser->user->fullname; ?></td>
 				<td><?php echo $contestUser->user->school; ?></td>
-				<td><?php echo CHtml::activeCheckBox($contestUser,'approved',array('checked'=>$contestUser->approved)); ?></td>
+				<td><?php $userId = $contestUser->user->id; echo CHtml::activeCheckBox($contestUser,"[$userId]approved",array('checked'=>$contestUser->approved)); ?></td>
 				<td><?php echo CHtml::link('<span class="glyphicon glyphicon-remove"></span>', array(
 					'contest/removeContestant',
+					'id' => $model->id,
 					'userId' => $contestUser->user->id,
-					'contestId' => $model->id,
 				)); ?>
 				</td>
 			</tr>
 		<?php endforeach;?>
+		<center></center>
 	</table>
 	
 	<h3>Tambah Peserta</h3>
@@ -59,8 +60,8 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 					'value' => function($data) use ($model){
 						return CHtml::link('add', array(
 							'contest/addContestant',
+							'id' => $model->id,
 							'userId' => $data->id,
-							'contestId' => $model->id,
 						));
 					}
 				),

@@ -178,11 +178,40 @@ class ContestSubmission extends CActiveRecord
 	 * return the contestSubmission based on user and contest id
 	 * @param userId int the user id
 	 * @param contestId int the user id
+	 * @return CActiveRecord Contest Submission
 	 */
 	public static function getCurrentUserModel($contestId){
 		$criteria = new CDbCriteria;
 		$criteria->condition = 'contest_id=:contest_id AND user_id=:user_id';
 		$criteria->params = array('contest_id'=>$contestId,'user_id'=>Yii::app()->user->id);
 		return ContestSubmission::model()->find($criteria);
+	}
+	/**
+	 * get array of submissions with indexed places
+	 * for example array[i] have submission with problem id = i.
+	 * @return CActiveRecord Submission Model
+	 */
+	public function getAllSubmissionIndexed(){
+		$tmp = $this->submissions;
+		$submissions = array();
+		foreach($tmp as $submission){
+			$submissions[$submission->id] = $submission;
+		}
+		return $submissions;
+
+	}
+
+	/**
+	 * generate submission for contest submission model
+	 * @param CActiveRecord ContestSubmission model
+	 */
+	public function generateSubmissions($contestSubModel){
+		$problemList = Contest::model()->getAllProblem();
+		foreach($problemList as $problem){
+			$submission = new Submission;
+			$submission->answer = '';
+			$submission->problem_id = $problem->id;
+			$submission->contest_submission_id = $contestSubModel->id;
+		}
 	}
 }

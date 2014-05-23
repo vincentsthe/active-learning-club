@@ -54,6 +54,7 @@
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="about"):?>class="active"<?php endif;?>><?php echo CHtml::link("About Us", array('site/page','view'=>'about'))?></li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="contact"):?>class="active"<?php endif;?>><?php echo CHtml::link("Kontak", array('site/page','view'=>'contact'))?></li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="image"):?>class="active"<?php endif;?>><?php echo CHtml::link("Image", array('image/index'))?></li>
+				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="career"):?>class="active"<?php endif;?>><?php echo CHtml::link("Karir", array('site/page','view'=>'career'))?></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<?php if(!Yii::app()->user->isGuest):?>
@@ -72,10 +73,8 @@
 
 	<div class="modal-footer footer">
 		<div class="container">
-			<h5>&#169 2014 ALC Indonesia</h5>
-			<?php echo CHtml::link("About Us", array('site/page','view'=>'about'))?> |
-			<?php echo CHtml::link("Kontak", array('site/page','view'=>'contact'))?> |
-			<?php echo CHtml::link("Karir", array('site/page','view'=>'career'))?>
+				&#169 2014 ALC Indonesia<br>
+			Designed with bootstrap. Powered by Yii framework
 		</div>
 	</div><!-- footer -->
 

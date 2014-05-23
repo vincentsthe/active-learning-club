@@ -12,8 +12,8 @@
  * @property string $content
  *
  * The followings are the available model relations:
+ * @property User $author
  * @property Contest $contest
- * @property Admin $author
  */
 class ContestAnnouncement extends CActiveRecord
 {
@@ -52,8 +52,8 @@ class ContestAnnouncement extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'author' => array(self::BELONGS_TO, 'User', 'author_id'),
 			'contest' => array(self::BELONGS_TO, 'Contest', 'contest_id'),
-			'author' => array(self::BELONGS_TO, 'Admin', 'author_id'),
 		);
 	}
 

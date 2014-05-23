@@ -61,7 +61,7 @@ class ContestController extends Controller
 			),
 			//hanya approved teacher yang boleh melakukan
 			array('allow',
-				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading'),
+				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','removeContestSubmission'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedTeacher'),
 			),
@@ -74,7 +74,7 @@ class ContestController extends Controller
 			//dua ini gw special case karena males banget (pake jquery dia)
 			//bisa jadi loophole security (misal kebanyakan diklik. tapi enggak lah ya)
 			array('allow',
-				'actions'=>array('loadProblem','submitAnswer','loadProblemWithAjax'),
+				'actions'=>array('submitAnswerWithAjax','loadProblemWithAjax'),
 				'users'=>array('@'),
 			),
 			//hanya apporved
@@ -311,12 +311,14 @@ class ContestController extends Controller
 	/**
 	 * memulai kontes.
 	 * create contest submission jika belum ada
+	 * create submission untuk seluruh soal
 	 * @param integer $id the ID of contest
 	 */
 	public function actionStart($id){
 		//dijamin pasti ada
 		$contestModel = $this->loadModel($id);
 		$contestSubmission = ContestSubmission::getCurrentUserModel($id);
+
 		$contestStatus = $contestModel->contestStatus();
 
 		if ($contestSubmission == null){ //pertama kali register
@@ -331,6 +333,7 @@ class ContestController extends Controller
 			$contestSubmission->start_time = $startTime;
 			$contestSubmission->end_time = $endTime;
 			$contestSubmission->save();
+			Submission::model()->generateSubmissions($contestSubmission);
 		}
 		$this->redirect(array('news','id'=>$id));
 
@@ -801,22 +804,25 @@ class ContestController extends Controller
 		$this->redirect(array('view','id'=>$id));
 	}
 
-	public function actionRemoveContestant($userId, $contestId) {
-		if(!Self::userAuthenticated($contestId)) {
-			throw new CHttpException(403, "Anda tidak terauntentikasi untuk mengakses data ini.");
-		}
-		
-		Contest::model()->findByPk($contestId)->removeFromContest($userId);
-		$this->redirect(array('contestant', 'id'=>$contestId));
+	public function actionRemoveContestant($id, $userId) {
+		Contest::model()->findByPk($id)->removeFromContest($userId);
+		$this->redirect(array('contestant', 'id'=>$id));
 	}
 	
-	public function actionAddContestant($userId, $contestId) {
-		if(!Self::userAuthenticated($contestId)) {
-			throw new CHttpException(403, "Anda tidak terauntentikasi untuk mengakses data ini.");
-		}
-		
-		Contest::model()->findByPk($contestId)->addToContest($userId);
-		$this->redirect(array('contestant', 'id'=>$contestId));
+	/**
+	 * @param int id contest id
+	 * @param int userId user id
+	 */
+	public function actionAddContestant($id, $userId) {
+		Contest::model()->findByPk($id)->addToContest($userId);
+		$this->redirect(array('contestant', 'id'=>$id));
+	}
+
+	public function actionRemoveContestSubmission($id,$contestSubId){
+		$model = ContestSubmission::model()->findByPk($contestSubId);
+		if ($model!==null)
+			$model->delete();
+		$this->redirect(array('grading','id'=>$id));
 	}
 
 	public function actionProblem($id){
@@ -825,14 +831,21 @@ class ContestController extends Controller
 			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
 		$problemList = $model->getAllProblem();
+		$contestSubModel = ContestSubmission::model()->getCurrentUserModel($id);
+		$submissions = $contestSubModel->getAllSubmissionIndexed();
 		$this->render('contestant/problem', array(
 			'problemList'=>$problemList,
 			'model' =>$model,
 			'numberOfProblems'=>count($problemList),
+			'contestSubModel'=>$contestSubModel,
+			'submissions'=>$submissions,
 		));
 	}
 
-	public function actionLoadProblemWithAjax($contestId,$problemId = 0,$indexNo){
+	public function actionLoadProblemWithAjax($c,$p = 0,$i = 0){
+		$contestId = $c;
+		$problemId = $p;
+		$indexNo = $i;
 		if ($problemId != 0){
 		 	$joinTable;
 		 	$problem = Problem::model()->findByPk($problemId);
@@ -856,9 +869,35 @@ class ContestController extends Controller
 		 	}
 		}
 	}
-	public function actionSubmitAnswer($contestId){
-		if (isset($contestId)){
-			
+	public function actionSubmitAnswerWithAjax($contestSubId){
+		if (isset($_POST['Answer'])){
+			Yii::trace("hello");
+			$criteria = new CDbCriteria;
+
+			foreach ($_POST['Answer'] as $problemId=>$answer){
+
+				echo $problemId;
+				if (isset($answer['answer'])){
+					$problemAnswer = $answer['answer'];
+					$criteria->condition = 'contest_submission_id=:contest_submission_id AND problem_id=:problem_id';
+					$criteria->params = array('contest_submission_id'=>$contestSubId,'problem_id'=>$problemId);
+					
+					$submission = Submission::model()->find($criteria);
+
+					if ($submission !== null){
+						$submission->answer = $problemAnswer;
+					} else {
+						$submission = new Submission;
+						$submission->problem_id = $problemId;
+						$submission->contest_submission_id = $contestSubId;
+						$submission->answer = $problemAnswer;
+					}
+
+					$submission->save();
+
+				}
+				
+			}
 		}
 	}
 	// /**

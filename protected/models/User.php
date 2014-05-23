@@ -14,10 +14,10 @@
  * @property integer $is_teacher
  *
  * The followings are the available model relations:
- * @property ContestAnnouncement $contestAnnouncement
+ * @property ContestAnnouncement[] $contestAnnouncements
  * @property ContestSubmission[] $contestSubmissions
  * @property Contest[] $contests
- * @property Image $image
+ * @property Image[] $images
  */
 class User extends CActiveRecord
 {
@@ -57,11 +57,11 @@ class User extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'contestAnnouncement' => array(self::HAS_ONE, 'ContestAnnouncement', 'id'),
+			'contestAnnouncements' => array(self::HAS_MANY, 'ContestAnnouncement', 'author_id'),
 			'contestSubmissions' => array(self::HAS_MANY, 'ContestSubmission', 'user_id'),
 			'contestUsers' => array(self::HAS_MANY, 'ContestUser', 'user_id'),
 			'contests' => array(self::MANY_MANY, 'Contest', 'contest_user(user_id, contest_id)'),
-			'images' => array(self::HAS_ONE, 'Image', 'id'),
+			'images' => array(self::HAS_MANY, 'Image', 'uploader'),
 		);
 	}
 
