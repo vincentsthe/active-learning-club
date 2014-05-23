@@ -18,6 +18,7 @@
 	<li <?php if(isset($activeMenuBar) &&  $activeMenuBar == "updateDiscussion"):?>class="active"<?php endif;?> ><?php echo CHtml::link("Pembahasan", array('contest/updateDiscussion','id'=>$_GET['id']))?></li>
 	<li <?php if(isset($activeMenuBar) &&  $activeMenuBar == "viewContestProblem"):?>class="active"<?php endif;?> ><?php echo CHtml::link("Review",array('contest/viewContestProblem', 'id'=>$_GET['id']));?></li>
 	<li <?php if(isset($activeMenuBar) &&  $activeMenuBar == "grading"):?>class="active"<?php endif;?> ><?php echo CHtml::link("Submission", array('contest/grading','id'=>$_GET['id']))?></li>
+	<li <?php if(isset($activeMenuBar) &&  $activeMenuBar == "image"):?>class="active"<?php endif;?> ><?php echo CHtml::link("Image", array('contest/image','id'=>$_GET['id']))?></li>
 </ul>
 <?php } ?>
 <div class="container">

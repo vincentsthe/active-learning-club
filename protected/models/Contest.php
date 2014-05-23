@@ -17,9 +17,11 @@
  * @property string $type
  *
  * The followings are the available model relations:
+ * @property Bidang $bidang0
  * @property ContestAnnouncement[] $contestAnnouncements
  * @property ContestSubmission[] $contestSubmissions
  * @property User[] $users
+ * @property Image[] $images
  * @property Problem[] $problems
  */
 class Contest extends CActiveRecord

@@ -8,9 +8,11 @@
  * @property string $token
  * @property string $name
  * @property integer $uploader
+ * @property integer $contest_id
  *
  * The followings are the available model relations:
- * @property User $uplodaer0
+ * @property Contest $contest
+ * @property User $uploader0
  */
 class Image extends CActiveRecord
 {
@@ -31,12 +33,12 @@ class Image extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('token, uploader', 'required'),
-			array('uploader', 'numerical', 'integerOnly'=>true),
+			array('uploader, contest_id','numerical', 'integerOnly'=>true),
 			array('token', 'length', 'max'=>64),
 			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, token, name, uploader', 'safe', 'on'=>'search'),
+			array('id, token, name, uploader, contest_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -48,7 +50,8 @@ class Image extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'uploader0' => array(self::BELONGS_TO, 'User','uploader'),
+			'contest' => array(self::BELONGS_TO,,'Contest', 'contest_id'),
+			'uploader0' => array(self::BELONGS_TO, 'User', 'uploader'),
 		);
 	}
 
@@ -62,6 +65,7 @@ class Image extends CActiveRecord
 			'token' => 'Token',
 			'name' => 'Name',
 			'uploader' => 'Uploader',
+			'contest_id' => 'Contest',
 		);
 	}
 
@@ -87,6 +91,7 @@ class Image extends CActiveRecord
 		$criteria->compare('token',$this->token,true);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('uploader',$this->uploader);
+		$criteria->compare('contest_id',$this->contest_id);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

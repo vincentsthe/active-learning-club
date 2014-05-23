@@ -1,0 +1,15 @@
+.gitignore
+protected/runtime/
+*~
+*~.log
+.settings
+.cache
+.project
+.classpath
+.scala_dependencies
+bin
+target
+.target
+.project
+.buildpath
+images/
