@@ -144,9 +144,18 @@ class SiteController extends Controller
 			$userModel->attributes = $model->attributes;
 			$userModel->password = sha1($userModel->password);
 			
+			$criteria = new CDbCriteria;
+			$criteria->condition = "username='" . $userModel->username . "'";
+			
+			$user = User::model()->find($criteria);
+			
+			if($user == null) {
 			// validate user input and redirect to the Login page if valid
-			if($userModel->validate() && $userModel->save()){
-				$this->redirect(Yii::app()->request->baseUrl.'/index.php','');
+				if($userModel->validate() && $userModel->save()){
+					$this->redirect(Yii::app()->request->baseUrl.'/index.php','');
+				}
+			} else {
+				Yii::app()->user->setFlash('error', 'username sudah terpakai.');
 			}
 			
 		}

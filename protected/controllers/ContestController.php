@@ -824,6 +824,18 @@ class ContestController extends Controller
 		if ($model == null){
 			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
+		
+		if(isset($_GET['renderImage'])) {
+			ob_clean();
+			$filename = $_GET['renderImage'];
+			$filepath = Utilities::getUploadedImagePath() . $_GET['renderImage'];
+			header('Content-Type: '. CFileHelper::getMimeType($filepath));
+			header('Content-Length: ' . filesize($filepath));
+			header('Content-Disposition: attachment; filename="' . $filename . '"');
+			readfile($filepath);
+			exit;
+		}
+		
 		$problemList = $model->getAllProblem();
 		$this->render('contestant/problem', array(
 			'problemList'=>$problemList,

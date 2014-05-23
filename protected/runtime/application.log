@@ -408,3 +408,119 @@ REQUEST_URI=/alc-total/index.php/contest/50/image
 2014/05/23 17:54:16 [warning] [application] Failed to set unsafe attribute "image" of "ImageForm".
 in /var/www/html/alc-total/protected/controllers/ContestController.php (993)
 in /var/www/html/alc-total/index.php (15)
+2014/05/23 19:14:21 [error] [exception.CException] exception 'CException' with message 'Property "CWebUser.isAdmin" is not defined.' in /var/www/html/alc-total/framework/base/CComponent.php:130
+Stack trace:
+#0 /var/www/html/alc-total/framework/web/auth/CWebUser.php(146): CComponent->__get('isAdmin')
+#1 /var/www/html/alc-total/protected/views/layouts/main.php(56): CWebUser->__get('isAdmin')
+#2 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#3 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#4 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(76): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#5 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(54): CContentDecorator->decorate('<div class="col...')
+#6 /var/www/html/alc-total/framework/web/widgets/COutputProcessor.php(44): CContentDecorator->processOutput('<div class="col...')
+#7 /var/www/html/alc-total/framework/web/CBaseController.php(206): COutputProcessor->run()
+#8 /var/www/html/alc-total/framework/web/CBaseController.php(300): CBaseController->endWidget('CContentDecorat...')
+#9 /var/www/html/alc-total/protected/views/layouts/guestLayout.php(10): CBaseController->endContent()
+#10 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#11 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#12 /var/www/html/alc-total/framework/web/CController.php(784): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#13 /var/www/html/alc-total/protected/controllers/SiteController.php(111): CController->render('login', Array)
+#14 /var/www/html/alc-total/framework/web/actions/CInlineAction.php(49): SiteController->actionLogin()
+#15 /var/www/html/alc-total/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#16 /var/www/html/alc-total/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#17 /var/www/html/alc-total/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#18 /var/www/html/alc-total/framework/web/CWebApplication.php(282): CController->run('login')
+#19 /var/www/html/alc-total/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#20 /var/www/html/alc-total/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#21 /var/www/html/alc-total/index.php(15): CApplication->run()
+#22 {main}
+REQUEST_URI=/alc-total/index.php/site/login
+HTTP_REFERER=http://127.0.0.1/alc-total/index.php/contest/index
+---
+2014/05/23 19:14:23 [error] [exception.CException] exception 'CException' with message 'Property "CWebUser.isAdmin" is not defined.' in /var/www/html/alc-total/framework/base/CComponent.php:130
+Stack trace:
+#0 /var/www/html/alc-total/framework/web/auth/CWebUser.php(146): CComponent->__get('isAdmin')
+#1 /var/www/html/alc-total/protected/views/layouts/main.php(56): CWebUser->__get('isAdmin')
+#2 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#3 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#4 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(76): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#5 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(54): CContentDecorator->decorate('<div class="col...')
+#6 /var/www/html/alc-total/framework/web/widgets/COutputProcessor.php(44): CContentDecorator->processOutput('<div class="col...')
+#7 /var/www/html/alc-total/framework/web/CBaseController.php(206): COutputProcessor->run()
+#8 /var/www/html/alc-total/framework/web/CBaseController.php(300): CBaseController->endWidget('CContentDecorat...')
+#9 /var/www/html/alc-total/protected/views/layouts/guestLayout.php(10): CBaseController->endContent()
+#10 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#11 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#12 /var/www/html/alc-total/framework/web/CController.php(784): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#13 /var/www/html/alc-total/protected/controllers/SiteController.php(111): CController->render('login', Array)
+#14 /var/www/html/alc-total/framework/web/actions/CInlineAction.php(49): SiteController->actionLogin()
+#15 /var/www/html/alc-total/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#16 /var/www/html/alc-total/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#17 /var/www/html/alc-total/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#18 /var/www/html/alc-total/framework/web/CWebApplication.php(282): CController->run('login')
+#19 /var/www/html/alc-total/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#20 /var/www/html/alc-total/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#21 /var/www/html/alc-total/index.php(15): CApplication->run()
+#22 {main}
+REQUEST_URI=/alc-total/index.php/site/login
+---
+2014/05/23 19:14:27 [error] [exception.CException] exception 'CException' with message 'Property "CWebUser.isAdmin" is not defined.' in /var/www/html/alc-total/framework/base/CComponent.php:130
+Stack trace:
+#0 /var/www/html/alc-total/framework/web/auth/CWebUser.php(146): CComponent->__get('isAdmin')
+#1 /var/www/html/alc-total/protected/views/layouts/main.php(56): CWebUser->__get('isAdmin')
+#2 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#3 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#4 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(76): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#5 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(54): CContentDecorator->decorate('<div class="col...')
+#6 /var/www/html/alc-total/framework/web/widgets/COutputProcessor.php(44): CContentDecorator->processOutput('<div class="col...')
+#7 /var/www/html/alc-total/framework/web/CBaseController.php(206): COutputProcessor->run()
+#8 /var/www/html/alc-total/framework/web/CBaseController.php(300): CBaseController->endWidget('CContentDecorat...')
+#9 /var/www/html/alc-total/protected/views/layouts/guestLayout.php(10): CBaseController->endContent()
+#10 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#11 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#12 /var/www/html/alc-total/framework/web/CController.php(784): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#13 /var/www/html/alc-total/protected/controllers/SiteController.php(111): CController->render('login', Array)
+#14 /var/www/html/alc-total/framework/web/actions/CInlineAction.php(49): SiteController->actionLogin()
+#15 /var/www/html/alc-total/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#16 /var/www/html/alc-total/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#17 /var/www/html/alc-total/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#18 /var/www/html/alc-total/framework/web/CWebApplication.php(282): CController->run('login')
+#19 /var/www/html/alc-total/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#20 /var/www/html/alc-total/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#21 /var/www/html/alc-total/index.php(15): CApplication->run()
+#22 {main}
+REQUEST_URI=/alc-total/index.php/site/login
+---
+2014/05/23 19:14:28 [error] [exception.CException] exception 'CException' with message 'Property "CWebUser.isAdmin" is not defined.' in /var/www/html/alc-total/framework/base/CComponent.php:130
+Stack trace:
+#0 /var/www/html/alc-total/framework/web/auth/CWebUser.php(146): CComponent->__get('isAdmin')
+#1 /var/www/html/alc-total/protected/views/layouts/main.php(56): CWebUser->__get('isAdmin')
+#2 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#3 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#4 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(76): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#5 /var/www/html/alc-total/framework/web/widgets/CContentDecorator.php(54): CContentDecorator->decorate('<div class="col...')
+#6 /var/www/html/alc-total/framework/web/widgets/COutputProcessor.php(44): CContentDecorator->processOutput('<div class="col...')
+#7 /var/www/html/alc-total/framework/web/CBaseController.php(206): COutputProcessor->run()
+#8 /var/www/html/alc-total/framework/web/CBaseController.php(300): CBaseController->endWidget('CContentDecorat...')
+#9 /var/www/html/alc-total/protected/views/layouts/guestLayout.php(10): CBaseController->endContent()
+#10 /var/www/html/alc-total/framework/web/CBaseController.php(126): require('/var/www/html/a...')
+#11 /var/www/html/alc-total/framework/web/CBaseController.php(95): CBaseController->renderInternal('/var/www/html/a...', Array, true)
+#12 /var/www/html/alc-total/framework/web/CController.php(784): CBaseController->renderFile('/var/www/html/a...', Array, true)
+#13 /var/www/html/alc-total/protected/controllers/SiteController.php(111): CController->render('login', Array)
+#14 /var/www/html/alc-total/framework/web/actions/CInlineAction.php(49): SiteController->actionLogin()
+#15 /var/www/html/alc-total/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#16 /var/www/html/alc-total/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#17 /var/www/html/alc-total/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#18 /var/www/html/alc-total/framework/web/CWebApplication.php(282): CController->run('login')
+#19 /var/www/html/alc-total/framework/web/CWebApplication.php(141): CWebApplication->runController('site/login')
+#20 /var/www/html/alc-total/framework/base/CApplication.php(180): CWebApplication->processRequest()
+#21 /var/www/html/alc-total/index.php(15): CApplication->run()
+#22 {main}
+REQUEST_URI=/alc-total/index.php/site/login
+HTTP_REFERER=http://127.0.0.1/alc-total/index.php/contest/50/view
+---
+2014/05/23 19:44:42 [warning] [application] Failed to set unsafe attribute "repeat_password" of "User".
+in /var/www/html/alc-total/protected/controllers/SiteController.php (144)
+in /var/www/html/alc-total/index.php (15)
+2014/05/23 19:45:00 [warning] [application] Failed to set unsafe attribute "repeat_password" of "User".
+in /var/www/html/alc-total/protected/controllers/SiteController.php (144)
+in /var/www/html/alc-total/index.php (15)

@@ -33,6 +33,13 @@ way you prefer to act in the professional realm.</p>
 </div>
 <div class="col-xs-5">
 
+
+<?php if(Yii::app()->user->hasFlash('error')): ?>
+	<div class="alert alert-danger">
+		<?php echo Yii::app()->user->getFlash('error'); ?>
+	</div>
+<?php endif; ?>
+
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'register-form',
 	'enableClientValidation'=>true,

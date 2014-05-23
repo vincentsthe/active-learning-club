@@ -53,7 +53,9 @@
 				</li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="about"):?>class="active"<?php endif;?>><?php echo CHtml::link("About Us", array('site/page','view'=>'about'))?></li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="contact"):?>class="active"<?php endif;?>><?php echo CHtml::link("Kontak", array('site/page','view'=>'contact'))?></li>
-				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="image"):?>class="active"<?php endif;?>><?php echo CHtml::link("Image", array('image/index'))?></li>
+				<?php if (isset(Yii::app()->user->isAdmin) && Yii::app()->user->isAdmin || isset(Yii::app()->user->isTeacher) && Yii::app()->user->isTeacher) : ?>
+					<li <?php if(isset($this->topBarActive) && $this->topBarActive=="image"):?>class="active"<?php endif;?>><?php echo CHtml::link("Image", array('image/index'))?></li>
+				<?php endif; ?>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<?php if(!Yii::app()->user->isGuest):?>
