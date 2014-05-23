@@ -38,6 +38,12 @@
 	</div>
 
 	<div class="row">
+		<?php echo $form->labelEx($model,'email'); ?>
+		<?php echo $form->textField($model,'email', array('class'=>'form-control')); ?>
+		<?php echo $form->error($model,'email'); ?>
+	</div>
+
+	<div class="row">
 		<?php echo $form->labelEx($model,'school'); ?>
 		<?php echo $form->textField($model,'school', array('class'=>'form-control')); ?>
 		<?php echo $form->error($model,'school'); ?>

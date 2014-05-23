@@ -6,11 +6,18 @@ class UserController extends Controller
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-	public $layout='//layouts/contestLayout';
+	public $layout='//layouts/lobbyLayout';
 	
-	public $active = "";
-	
-	public $mainLayoutActive = "user";
+	/**
+	 * @var string the active left menu sidebar
+	 * use with <controller_name>/<controller_action>
+	 */
+	public $active = "home";
+	/**
+	 * @var string the active top menu sidebar
+	 * use with home/about/contact
+	 */
+	public $topBarActive = "user/index";
 
 	/**
 	 * @return array action filters
@@ -46,7 +53,6 @@ class UserController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$this->active = "view";
 		
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
@@ -59,7 +65,7 @@ class UserController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$this->active = "create";
+		$this->active = 'user/create';
 		
 		$model=new User;
 
@@ -121,7 +127,7 @@ class UserController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$this->active = "index";
+		$this->active = "user/index";
 		$criteria = new CDbCriteria;
 		
 		if(isset($_GET['filter'])) {

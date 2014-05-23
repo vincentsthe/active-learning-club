@@ -11,7 +11,7 @@ class UserIdentity extends CUserIdentity
 	
 	public function authenticate() {
 		$username=strtolower($this->username);
-		$user=Admin::model()->find('LOWER(username)=?', array($username));
+		$user=User::model()->find('LOWER(username)=?', array($username));
 		
 		if($user===null) {
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
@@ -20,7 +20,10 @@ class UserIdentity extends CUserIdentity
 		} else {
 			$this->_id=$user->id;
 			$this->username=$user->username;
-			$this->setState('bidang', $user->bidang);
+			//hak akses
+			$this->setState('isAdmin',$user->is_admin);
+			$this->setState('isTeacher',$user->is_teacher);
+
 			$this->errorCode=self::ERROR_NONE;
 		}
 		
@@ -30,4 +33,12 @@ class UserIdentity extends CUserIdentity
 	public function getId() {
 		return $this->_id;
 	}
+	/*
+	public function isAdmin(){
+		return $this->_isAdmin;
+	}
+
+	public function isTeacher(){
+		return $this->_isTeacher;
+	}*/
 }

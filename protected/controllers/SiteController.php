@@ -2,6 +2,11 @@
 
 class SiteController extends Controller
 {
+	public $layout = '//layouts/guestLayout';
+	public $active;
+	public $topBarActive;
+	//untuk topBarActive yang buat static page (about,contact, dll)
+	//ada di static page masing2.
 	/**
 	 * Declares class-based actions.
 	 */
@@ -29,7 +34,13 @@ class SiteController extends Controller
 	{
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
-		$this->render('index');
+		$this->topBarActive = 'home';
+		if (Yii::app()->user->isGuest){
+			$this->redirect('register');
+		} else {
+			//redirect to contest if logged in
+			$this->redirect(array('contest/index'));
+		}
 	}
 
 	/**
@@ -51,6 +62,7 @@ class SiteController extends Controller
 	 */
 	public function actionContact()
 	{
+		$this->topBarActive = 'contact';
 		$model=new ContactForm;
 		if(isset($_POST['ContactForm']))
 		{
@@ -90,9 +102,10 @@ class SiteController extends Controller
 		if(isset($_POST['LoginForm']))
 		{
 			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
+			// validate user input and redirect to 
+			if($model->validate() && $model->login()){
+				$this->redirect(array('contest/index'));
+			}
 		}
 		// display the login form
 		$this->render('login',array('model'=>$model));
@@ -105,5 +118,39 @@ class SiteController extends Controller
 	{
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
+	}
+
+	/**
+	 * Displays the Register page
+	 */
+	public function actionRegister()
+	{
+		$model=new RegisterForm;
+
+		// if it is ajax validation request
+		if(isset($_POST['ajax']) && $_POST['ajax']==='register-form')
+		{
+			echo CActiveForm::validate($model);
+			Yii::app()->end();
+		}
+
+		if(isset($_POST['RegisterForm']))
+		{
+			$model->attributes=$_POST['RegisterForm'];
+
+			$userModel = new User;
+			//encrypt the password
+			
+			$userModel->attributes = $model->attributes;
+			$userModel->password = sha1($userModel->password);
+			
+			// validate user input and redirect to the Login page if valid
+			if($userModel->validate() && $userModel->save()){
+				$this->redirect(Yii::app()->request->baseUrl.'/index.php','');
+			}
+			
+		}
+		//display the register form
+		$this->render('register',array('model'=>$model));
 	}
 }

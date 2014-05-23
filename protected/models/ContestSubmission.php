@@ -131,7 +131,7 @@ class ContestSubmission extends CActiveRecord
 		$listSubmission = $this->submissions;
 		$correctAnswer = 0;
 		$wrongAnswer = 0;
-		$blankAnser = 0;
+		$blankAnswer = 0;
 		$totalScore = 0;
 		
 		foreach($listSubmission as $submission) {
@@ -140,7 +140,7 @@ class ContestSubmission extends CActiveRecord
 			if($submission->answer == null || $submission->answer==="") {
 				$blankAnswer++;
 				$totalScore += $problem->blank_score;
-			} else if($submission->answer ==) {
+			} else if($submission->answer == $problem->answer) {
 				$correctAnswer++;
 				$totalScore += $correctScore;
 			} else {
@@ -172,5 +172,17 @@ class ContestSubmission extends CActiveRecord
 			$submission->delete();
 		}
 		return Parent::beforeDelete();
+	}
+
+	/**
+	 * return the contestSubmission based on user and contest id
+	 * @param userId int the user id
+	 * @param contestId int the user id
+	 */
+	public static function getCurrentUserModel($contestId){
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'contest_id=:contest_id AND user_id=:user_id';
+		$criteria->params = array('contest_id'=>$contestId,'user_id'=>Yii::app()->user->id);
+		return ContestSubmission::model()->find($criteria);
 	}
 }

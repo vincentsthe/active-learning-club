@@ -27,35 +27,39 @@
 <body>
 	<!-- Header -->
 	<div class="header container-fluid">
-		<div class="branding">
+		<div class="container">
 			<div class="row">
-				<div class="col-md-2">
-					<img src="<?php echo Yii::app()->request->baseUrl; ?>/images/Banner.png" height="130px">
+				<div class="col-xs-1">
+					<!--img src="<?php echo Yii::app()->request->baseUrl; ?>/images/Banner.png" height="130px"-->
 				</div>
-				<h1 class="col-md-10">ALC Indonesia</h1>
-				<h2 class="col-md-10">Active Learning Club Indonesia</h2>
+				<div class="col-xs-10">
+					<h3>ALC Learning Center</h3>
+					<h5>Tempat berlatih menghadapi OSN</h5>
+				</div>
+				
 			</div>
 		</div>
 	</div>
 	<div class="navbar navbar-inverse" style="padding:0px;margin-bottom: 0px;">
 		<div class="container navbar-menu">
 			<ul class="nav navbar-nav">
-				<?php if((!Yii::app()->user->isGuest) && (Yii::app()->user->name == 'admin')): ?>
-					<li <?php if(isset($this->mainLayoutActive) && $this->mainLayoutActive=="admin"):?>class="active"<?php endif;?>><?php echo CHtml::link("Admin", array('admin/index'))?></li>
-				<?php endif;?>
-				<li <?php if(isset($this->mainLayoutActive) && $this->mainLayoutActive=="contest"):?>class="active"<?php endif;?>><?php echo CHtml::link("Kontes", array('contest/index'))?></li>
-				<li <?php if(isset($this->mainLayoutActive) && $this->mainLayoutActive=="user"):?>class="active"<?php endif;?>><?php echo CHtml::link("User", array('user/index'))?></li>
-				<li <?php if(isset($this->mainLayoutActive) && $this->mainLayoutActive=="image"):?>class="active"<?php endif;?>><?php echo CHtml::link("Image", array('image/index'))?></li>
+				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="home"):?>class="active" <?php endif;?> >
+				<?php
+					if (Yii::app()->user->isGuest)
+						echo CHtml::link("Home", array('site/index'));
+					else
+						echo CHtml::link("Home", array('contest/index'));
+				?>
+				</li>
+				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="about"):?>class="active"<?php endif;?>><?php echo CHtml::link("About Us", array('site/page','view'=>'about'))?></li>
+				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="contact"):?>class="active"<?php endif;?>><?php echo CHtml::link("Kontak", array('site/page','view'=>'contact'))?></li>
+				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="image"):?>class="active"<?php endif;?>><?php echo CHtml::link("Image", array('image/index'))?></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<?php if(!Yii::app()->user->isGuest):?>
 					<li><a><?php echo Yii::app()->user->name;?>, </a></li>
 					<li><?php echo CHtml::link("Logout", array('site/logout'))?></li>
-				<?php else:?>
-					<form>
-						<input type="text" class="form-control">
-					</form>
-				<?php endif;?>
+				<?php endif; ?>
 			</ul>
 		</div>
 	</div>
@@ -68,7 +72,10 @@
 
 	<div class="modal-footer footer">
 		<div class="container">
-			<h4>&#169 2014 ALC Indonesia</h4>
+			<h5>&#169 2014 ALC Indonesia</h5>
+			<?php echo CHtml::link("About Us", array('site/page','view'=>'about'))?> |
+			<?php echo CHtml::link("Kontak", array('site/page','view'=>'contact'))?> |
+			<?php echo CHtml::link("Karir", array('site/page','view'=>'career'))?>
 		</div>
 	</div><!-- footer -->
 

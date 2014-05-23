@@ -4,7 +4,6 @@ window.onload = createTimer(<?php echo (int) ($timeLeft); ?>);
 function createTimer(seconds){
 	totalSeconds = seconds;
 	Tick();
-	alert("here");
 }
 function Tick(){
 	totalSeconds -= 1;

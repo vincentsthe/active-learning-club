@@ -15,16 +15,15 @@ Yii::app()->getClientScript()->registerScriptFile("http://cdn.mathjax.org/mathja
 <?php $this->renderPartial('_menubar',array('activeMenuBar'=>'viewContestProblem')); ?>
 
 <div class="clear"></div>
-
+Keterangan Poin: [Benar/Salah/Kosong]
 <?php foreach($listProblem as $problem): ?>
-
 	<hr>
 	<div class="row">
 		<div class="col-md-1" style="width:3%;padding-right:0;margin-right:0;">
 			<b><?php echo $number++;?></b>
 		</div>
 		<div class="col-md-11" style="width:97%;margin-left:0">
-			<?php echo "[$problem->correct_score point] $problem->content";?>
+			<?php echo "[$problem->correct_score/$problem->wrong_score/$problem->blank_score] $problem->content";?>
 		</div>
 	</div><br>
 	

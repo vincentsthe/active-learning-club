@@ -3,6 +3,7 @@ body
 	margin: 0;
 	padding: 0;
 	font: normal 10pt Arial,Helvetica,sans-serif;
+	background-color: #efefef;
 }
 
 #page
@@ -16,25 +17,20 @@ body
 .header
 {
 	margin: 0;
-	padding: 0;
-	height: 150px;
 	background-image: linear-gradient(#6b0896, #a658c4);
 	background-image: -webkit-linear-gradient(#6b0896, #a658c4);
 	background-image: -o-linear-gradient(#6b0896, #a658c4);
 	background-image: -moz-linear-gradient(#6b0896, #a658c4);
-	
+	color : #ffffff;
+	/*width: 1349px !important;*/
 }
 
 .branding {
-	width: 1150px;
 	margin: 0 auto;
 	padding: 10px;
 	color:white;
 }
 
-.navbar-menu {
-	width: 1150px;
-}
 
 .branding h1 {
 	font-size: 400%;
@@ -48,14 +44,12 @@ body
 
 .content {
     padding: 0px;
-    width: 1150px;
     margin: 0 auto;
     background-color: #F3F3F3;
     border-right: 1px solid #CCC;
     border-left: 1px solid #CCC;
     min-height: 500px;
 }
-
 .sidebar {
 	margin-top: 10px;
 }
@@ -193,11 +187,6 @@ div.search-form
 	background: #eee;
 }
 
-.portlet
-{
-
-}
-
 .portlet-decoration
 {
 	padding: 3px 8px;
@@ -273,6 +262,7 @@ div.search-form
 	text-align: center;
 	color: white;
 	margin-top: 0;
+	/*width: 1349px !important;*/
 }
 
 .label-control {
@@ -287,3 +277,141 @@ div.search-form
 	border: 1px solid #333;
 	padding: 10px;
 }
+
+
+@media (max-width: 1024px) {
+	.container {
+		width: 100% !important;
+	}
+}
+
+.number-box {
+	width: 100%;
+	position: fixed;
+	padding: 10px;
+	/*background-color:#d3d3d3;*/
+	bottom:0;
+	left:0;
+	background: rgb(240,249,255); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(240,249,255,1) 0%, rgba(203,235,255,1) 47%, rgba(161,219,255,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(240,249,255,1)), color-stop(47%,rgba(203,235,255,1)), color-stop(100%,rgba(161,219,255,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(240,249,255,1) 0%,rgba(203,235,255,1) 47%,rgba(161,219,255,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=0 ); /* IE6-9 */
+
+}
+.number-box > .container > ul > li > a {
+	cursor:pointer;
+}
+
+.highlight {
+}
+.highlight.red{
+	background-color: rgba(255, 59, 105, 0.4);
+	color : #c90000;
+}
+
+#con-status {
+	border-radius: 50%;
+	border-width: 10px;
+	width : 100px;
+	height: 100px;
+}
+/**
+* CSS themes for simplePagination.js
+* Author: Flavius Matis - http://flaviusmatis.github.com/
+* URL: https://github.com/flaviusmatis/simplePagination.js
+*/
+
+ul.simple-pagination {
+	list-style: none;
+}
+
+.simple-pagination {
+	display: block;
+	overflow: hidden;
+	padding: 0 5px 5px 0;
+	margin: 0;
+}
+
+.simple-pagination ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.simple-pagination li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	float: left;
+}
+
+/*------------------------------------*\
+	Light Theme Styles
+\*------------------------------------*/
+
+.light-theme a, .light-theme span {
+	float: left;
+	color: black;
+	font-size:14px;
+	line-height:24px;
+	font-weight: normal;
+	text-align: center;
+	border: 1px solid #BBB;
+	min-width: 14px;
+	padding: 0 7px;
+	margin: 0 5px 0 0;
+	border-radius: 3px;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+	background: #ffffff; /* Old browsers */
+	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+}	
+
+.light-theme .answered, .light-theme .answered{
+	background: rgb(31,230,0); /* Old browsers */
+	background: -moz-linear-gradient(top, rgba(31,230,0,1) 0%, rgba(21,181,40,1) 72%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(31,230,0,1)), color-stop(72%,rgba(21,181,40,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(31,230,0,1) 0%,rgba(21,181,40,1) 72%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(31,230,0,1) 0%,rgba(21,181,40,1) 72%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(31,230,0,1) 0%,rgba(21,181,40,1) 72%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(31,230,0,1) 0%,rgba(21,181,40,1) 72%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1fe600', endColorstr='#15b528',GradientType=0 ); /* IE6-9 */
+}
+
+.light-theme a:hover {
+	text-decoration: none;
+	background: yellow;
+}
+
+.light-theme .current {
+	background: #666;
+
+	color: #FFF;
+	border-color: #444;
+	box-shadow: 0 1px 0 rgba(255,255,255,1), 0 0 2px rgba(0, 0, 0, 0.3) inset;
+	cursor: default;
+}
+
+.light-theme .ellipse {
+	background: none;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	font-weight: bold;
+	cursor: default;
+}
+/*
+@media (min-width: 480px) {
+	.container {
+		width: 100%;
+	}
+}*/

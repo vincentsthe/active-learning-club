@@ -7,15 +7,21 @@
  * @property integer $id
  * @property string $username
  * @property string $password
+ * @property string $email
  * @property string $fullname
  * @property string $school
+ * @property integer $is_admin
+ * @property integer $is_teacher
  *
  * The followings are the available model relations:
  * @property ContestSubmission[] $contestSubmissions
- * @property ContestUser[] $contestUsers
+ * @property Contest[] $contests
  */
 class User extends CActiveRecord
 {
+	const ADMIN = 0;
+	const TEACHER = 1;
+	const CONTESTANT = 2;
 	/**
 	 * @return string the associated database table name
 	 */
@@ -32,11 +38,12 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('username, password, fullname, school', 'required'),
-			array('username, password, fullname, school', 'length', 'max'=>127),
+			array('username, password, email, fullname, school', 'required'),
+			array('is_admin, is_teacher', 'numerical', 'integerOnly'=>true),
+			array('username, password, email, fullname, school', 'length', 'max'=>127),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, username, password, fullname, school', 'safe', 'on'=>'search'),
+			array('id, username, password, email, fullname, school, is_admin, is_teacher', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -63,6 +70,9 @@ class User extends CActiveRecord
 			'id' => 'ID',
 			'username' => 'Username',
 			'password' => 'Password',
+			'email' => 'Email',
+			'is_admin' => 'Admin',
+			'is_teacher' => 'Pengajar',
 			'fullname' => 'Fullname',
 			'school' => 'School',
 		);
@@ -90,7 +100,10 @@ class User extends CActiveRecord
 		$criteria->compare('username',$this->username,true);
 		$criteria->compare('password',$this->password,true);
 		$criteria->compare('fullname',$this->fullname,true);
+		$criteria->compare('email',$this->email,true);
 		$criteria->compare('school',$this->school,true);
+		$criteria->compare('is_admin',$this->is_admin);
+		$criteria->compare('is_teacher',$this->is_teacher);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -107,4 +120,14 @@ class User extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+	/**
+	 * validate the password
+	 */
+	public function validatePassword($password){
+		$user = User::model()->find('username=:username', array('username'=>$this->username));
+		return $user->password == sha1($password);
+	}
+
+
 }

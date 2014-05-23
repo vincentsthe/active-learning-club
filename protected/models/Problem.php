@@ -13,6 +13,7 @@
  * @property integer $anulir
  * @property string $content
  * @property string $type
+ * @property string $discussion
  *
  * The followings are the available model relations:
  * @property Contest $contest
@@ -49,7 +50,7 @@ class Problem extends CActiveRecord
 			array('type', 'length', 'max'=>6),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, contest_id, answer, correct_score, wrong_score, blank_score, anulir, content, type', 'safe', 'on'=>'search'),
+			array('id, contest_id, answer, correct_score, wrong_score, blank_score, anulir, type', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -84,6 +85,7 @@ class Problem extends CActiveRecord
 			'anulir' => 'Anulir',
 			'content' => 'Content',
 			'type' => 'Type',
+			'discussion'=> 'Pembahasan',
 		);
 	}
 
@@ -112,7 +114,7 @@ class Problem extends CActiveRecord
 		$criteria->compare('wrong_score',$this->wrong_score);
 		$criteria->compare('blank_score',$this->blank_score);
 		$criteria->compare('anulir',$this->anulir);
-		$criteria->compare('content',$this->content,true);
+		//$criteria->compare('content',$this->content,true);
 		$criteria->compare('type',$this->type,true);
 
 		return new CActiveDataProvider($this, array(
@@ -166,5 +168,32 @@ class Problem extends CActiveRecord
 
 	public function isEssay(){
 		return $this->type == Self::ESSAY;
+	}
+
+	public function convertToArray(){
+		$retval = array();
+		
+		$childModel = null;
+		switch ($this->type) {
+			case Problem::MULTIPLE_CHOICE:
+				$childModel = $this->problemChoice;
+				break;
+			case Problem::SHORT_ANSWER:
+				$childModel = $this->problemShort;
+				break;
+			case Problem::ESSAY:
+				$childModel = $this->problemEssay;
+				break;
+			default:
+				# code...
+				break;
+		}
+		foreach($this->getAttributes() as $key=>$value){
+			$retval[$key] = $value;
+		}
+		foreach($childModel as $key=>$value){
+			$retval[$key] = $value;
+		}
+		return $retval;
 	}
 }

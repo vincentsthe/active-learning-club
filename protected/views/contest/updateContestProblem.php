@@ -11,7 +11,7 @@ $number = $pagination->pageSize * $pagination->currentPage + 1;
 ?>
 
 <?php $this->renderPartial('_header',array('model'=>$model)); ?>
-<?php $this->renderPartial('_menubar',array('activeMenuBar'=>'updateContestProblem')); ?>
+<?php $this->renderPartial('_menubar',array('activeMenuBar'=>'updateDiscussion')); ?>
 <ul class="pagination pull-right">
 	<li <?php if($pagination->currentPage == 0): ?>class="disabled"<?php endif;?>><?php echo CHtml::link("<span class='glyphicon glyphicon-chevron-left'></span>", array('contest/updateContestProblem', 'id'=>$model->id, 'page'=>0), array('onclick'=>'return confirm("Pastikan anda sudah mensave soal!")'))?></li>
 	<?php for($j=0 ; $j<$pagination->pageCount ; $j++): ?>

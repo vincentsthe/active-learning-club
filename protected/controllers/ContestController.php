@@ -13,9 +13,11 @@ class ContestController extends Controller
 	/**
 	 * @var string the current active page (used for highlighting in the sidebar)
 	 */
-	public $active="";
-	
-	public $mainLayoutActive = "contest";
+	public $active;
+	/**
+	 * @var string the current active in top menu (home/about us/kontak)
+	 */
+	public $topBarActive = 'home';
 
 	/**
 	 * @return array action filters
@@ -40,10 +42,42 @@ class ContestController extends Controller
 	public function accessRules()
 	{
 		return array(
+			//hak-hak umum
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('delete','index','view','create','update','scoring','grading','contestant','updateContestProblem', 'viewContestProblem', 'removeContestant', 'addContestant', 'rank','grading'),
+				'actions'=>array('index','view'),
 				'users'=>array('@'),
 			),
+			//hak khusus untuk admin : boleh melakukan apapun
+			array('allow',
+				'actions'=>array('register','delete','view','create','update','scoring','grading','contestant','updateContestProblem','viewContestProblem', 'removeContestant', 'addContestant','grading'),
+				'users'=>array('@'),
+				'expression'=>array('ContestController','isAdmin'),
+			),
+			//open dan conditional contest: user manapunboleh mendaftar
+			array('allow',
+				'actions'=>array('register'),
+				'users'=>array('@'),
+				'expression'=>array('ContestController','isOpenForRegister'),
+			),
+			//hanya approved teacher yang boleh melakukan
+			array('allow',
+				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading'),
+				'users'=>array('@'),
+				'expression'=>array('ContestController','isApprovedTeacher'),
+			),
+			//kontestan dan manager yang approved yang boleh melakukan
+			array('allow',
+				'actions'=>array('start','news','problem','scoreboard'),
+				'users'=>array('@'),
+				'expression'=>array('ContestController','isApprovedContestant'),
+			),
+			//dua ini gw special case karena males banget (pake jquery dia)
+			//bisa jadi loophole security (misal kebanyakan diklik. tapi enggak lah ya)
+			array('allow',
+				'actions'=>array('loadProblem','submitAnswer'),
+				'users'=>array('@'),
+			),
+			//hanya apporved
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -56,17 +90,18 @@ class ContestController extends Controller
 	 */
 	public function actionView($id)
 	{
-		if(!Self::userAuthenticated($id)) {
-			throw new CHttpException(403, "Anda tidak terauntentikasi untuk mengakses data ini.");
-		}
-		
-		$this->active = 'view';
-		$contestantList = Contest::model()->findByPk($id)->users;
-		
+		$this->active = 'contest/index';
 		$model = $this->loadModel($id);
+		$contestSubModel = ContestSubmission::model()->getCurrentUserModel($id);
+		$contestStatus = $model->contestStatus();
+		$contestantList = $model->users;
+		
+		
 		$this->render('view',array(
 			'model'=>$model,
 			'contestantList' => $contestantList,
+			'contestStatus' => $contestStatus,
+			'contestSubModel' => $contestSubModel,
 		));
 	}
 	
@@ -124,8 +159,8 @@ class ContestController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$this->active = 'create';
-		
+		$this->active = 'contest/create';
+		$this->topBarActive = 'home';
 		$model=new ContestForm;
 
 		// Uncomment the following line if AJAX validation is needed
@@ -152,8 +187,15 @@ class ContestController extends Controller
 				$newContest->start_time = Utilities::formattedDateToTimestamp($model->start_time);		
 				$newContest->end_time = Utilities::formattedDateToTimestamp($model->end_time);
 				$newContest->type = $model->type;
-				//die($newContest->type);
+
 				if($newContest->validate() && $newContest->save()) {
+					//insert the current creator into ContestUserSchema
+					$contestUserModel = new ContestUser;
+					$contestUserModel->user_id = Yii::app()->user->id;
+					$contestUserModel->contest_id = $newContest->id;
+					$contestUserModel->approved = true;
+					$contestUserModel->save();
+					
 					$newContest->createProblemInstance($model->problemCount,$newContest);
 					$this->redirect(array('index'));
 				}
@@ -173,6 +215,9 @@ class ContestController extends Controller
 	 */
 	public function actionUpdate($id)
 	{	
+		//ubah mode ke manager
+		Yii::app()->session['view_as'] = User::TEACHER;
+		//die(Yii::app()->user->viewAs." hello");
 		$model=new ContestForm;
 		$contestModel = Contest::model()->findByPk($id);
 		if ($contestModel == null){ //no such contest
@@ -215,10 +260,10 @@ class ContestController extends Controller
 			$contestModel->start_time = Utilities::formattedDateToTimestamp($_POST['ContestForm']['start_time']);
 			$contestModel->end_time = Utilities::formattedDateToTimestamp($_POST['ContestForm']['end_time']);
 			
-			if($contestModel->save())
+			if($contestModel->save()){
 				$this->redirect(array('view','id'=>$contestModel->id));
+			}
 		}
-
 		$this->render('update',array(
 			'model'=>$model,
 			'userList'=>$userList,
@@ -228,6 +273,68 @@ class ContestController extends Controller
 		));
 	}
 	
+	/**
+	 * mengerjakan problem
+	 * @param id number contest_id
+	 */
+	public function actionProblem($id) {
+		if (!Self::userAuthenticated($id)){
+			$this->redirect(array('view','id'=>$id));
+		}
+
+		$contestSubModel = ContestSubmission::getCurrentUserModel($id);
+		$contestSubId = $contestSubModel->id;
+		$this->active = 'problem';
+		$model = Contest::model()->findByPk($id);
+		$criteria = new CDbCriteria;
+		// join the problem and submission table 
+		
+		//$criteria->condition = 'contest_id=:contest_id';
+		//$criteria->params = array('contest_id'=>$id,);
+		//$tblProblem = Problem::tableName(); $tblSubmission = Submission::tableName();
+		//$criteria->select = array('id',$tblSubmission.'.answer AS answer');
+		//$criteria->join = 'JOIN '.$tblSubmission.' ON '.$tblProblem.'.id='.$tblSubmission.'.problem_id AND contest_id='.$id;
+		$problemIdList = Problem::model()->findAllBySql(
+			"SELECT `problem`.`id`,`problem`.`type`,`submission`.`answer` 
+			FROM `problem` LEFT OUTER JOIN `submission` ON `problem`.`id`=`submission`.`problem_id` AND `contest_submission_id`=$contestSubId
+			WHERE `problem`.`contest_id`=$id");
+		
+		$this->render('problem', array(
+			'model' =>$model,
+			'problemIdList'=>$problemIdList,
+			'contestSubId'=>$contestSubId,
+			'endTime'=>$contestSubModel->end_time,
+		));
+	}
+
+	/**
+	 * memulai kontes.
+	 * create contest submission jika belum ada
+	 * @param integer $id the ID of contest
+	 */
+	public function actionStart($id){
+		//dijamin pasti ada
+		$contestModel = $this->loadModel($id);
+		$contestSubmission = ContestSubmission::getCurrentUserModel($id);
+		$contestStatus = $contestModel->contestStatus();
+
+		if ($contestSubmission == null){ //pertama kali register
+			$contestSubmission = new ContestSubmission;
+			$timeNow = time() + 0;
+			$startTime = $timeNow;
+			$endTime = min($contestModel->end_time,$startTime + $contestModel->duration * 60);
+
+			$contestSubmission->contest_id = $id;
+			$contestSubmission->user_id = Yii::app()->user->id;
+			$contestSubmission->started = 1;
+			$contestSubmission->start_time = $startTime;
+			$contestSubmission->end_time = $endTime;
+			$contestSubmission->save();
+		}
+		$this->redirect(array('news','id'=>$id));
+
+	}
+
 	/**
 	 * update contestant in contest
 	 */
@@ -262,6 +369,78 @@ class ContestController extends Controller
 			'controllerAction'=>'update',
 		));
 	}
+
+	/**
+	 * view scoreboard
+	 * @param id the contest idnumber
+     */
+	public function actionScoreboard($id){
+		
+		$this->active="scoreboard";
+		if (!isset($id)){
+			throw new CHttpException(404,"Halaman tidak ditemukan");
+		}
+		if (!Self::userAuthenticated($id)){
+			$this->redirect(array('view','id'=>$id));
+		}
+		//$criteria = new CDbCriteria; $criteria->with = array('contestSubmissions'=>array('condition'=>"contest_id=$id")); $criteria->together = true;
+		//Coba pake data provider: ternyata jalan.
+		//$dataProvider = User::model()->with(array('contestSubmissions'=>array('condition'=>"contest_id=$id")))->together()->findAll();
+		// $dataProvider = new CActiveDataProvider('User',array(
+		// 	'pagination' => array(
+		// 		'pageSize' => 20,
+		// 	),
+		// 	'criteria'=>$criteria,
+		// ));
+		$criteria = new CDbCriteria; 
+		$criteria->with = 'user'; $criteria->together = true;
+		$criteria->condition = "contest_id=$id";
+		$dataProvider = new CActiveDataProvider('ContestSubmission',array(
+			'criteria'=>$criteria,
+			'sort'=>array(
+				'attributes'=>array(
+					'Nama'=>array(
+						'asc'=>'fullname',
+						'desc'=>'fullname DESC',
+						),
+					'sekolah'=>array(
+						'asc'=>'school',
+						'desc'=>'school desc',
+						),
+					'*',
+					),
+				),
+		));
+		// foreach($dataProvider as $key=>$value){
+
+		// 	echo $value->id." ";
+		// 	foreach($value->contestSubmissions as $contestSubmission){
+		// 		echo $contestSubmission->id." ";
+		// 	}
+		// 	echo "<br>";
+		// }
+		$contestModel = Contest::model()->findByPk($id);
+		$this->render('scoreboard',array(
+			'dataProvider'=>$dataProvider,
+			'id'=>$id,
+			'model'=>$contestModel,
+		));
+		/*
+		//line in backup. jangan dihapus, in case yang data provider gak jalan
+		$command=Yii::app()->db->createCommand("SELECT DISTINCT 
+												`user`.`username` AS `username`,`user`.`fullname` AS `name`,`user`.`school` AS `school`,`contest_submission`.`score` AS `score`
+												FROM `user` INNER JOIN `contest_submission`
+												ON `user`.`id`=`contest_submission`.`user_id` AND `contest_submission`.`contest_id`=$id");
+		$listContestant = $command->queryAll();
+		$model = $this->loadModel($id);
+		$this->render('scoreboard',array(
+			'model'=>$model,
+			'listContestant'=>$listContestant,
+			'id'=>$id,
+			));
+		*/
+	}
+
 	/**
 	 * @param integer id the contest id
 	 */
@@ -295,10 +474,6 @@ class ContestController extends Controller
 		if ($contest==null){
 			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
-
-		if(!Self::userAuthenticated($id)) {
-			throw new CHttpException(403, "Anda tidak terauntentikasi untuk mengakses data ini.");
-		}
 		
 		if(isset($_GET['renderImage'])) {
 			ob_clean();
@@ -323,19 +498,15 @@ class ContestController extends Controller
 		$pages->applyLimit($criteria);
 		
 		//cari mau di join sama tabel mana
-		$childModelName;
 		switch ($contest->type) {
 			case Problem::MULTIPLE_CHOICE:
 				$criteria->with = 'problemChoice';
-				$childModelName = 'ProblemChoice';
 				break;
 			case Problem::SHORT_ANSWER:
 				$criteria->with = 'problemShort';
-				$childModelName = 'ProblemShort';
 				break;
 			case Problem::ESSAY:
 				$criteria->with = 'problemEssay';
-				$childModelName = 'ProblemEssay';
 				break;
 			default:
 				# code...
@@ -434,39 +605,148 @@ class ContestController extends Controller
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
+	public function actionIndex($id = 0)
 	{
-		$this->active = 'index';
-		$criteria = new CDbCriteria;
-		
-		if(isset($_GET['filter'])) {
-			$criteria->addCondition("title LIKE " . "'%" . $_GET['filter'] . "%'");
+		$this->active = 'contest/index';
+		if (Yii::app()->user->isAdmin || Yii::app()->user->isTeacher){ //use manager logic.
+			$criteria = new CDbCriteria;
+			
+			if(isset($_GET['filter'])) {
+				$criteria->addCondition("title LIKE " . "'%" . $_GET['filter'] . "%'");
+			}
+			
+			$dataProvider=new CActiveDataProvider('Contest', array(
+				'pagination' => array(
+					'pageSize' => 20,
+				),
+				'criteria' => $criteria,
+			));
+			$this->render('teacher/index',array(
+				'dataProvider'=>$dataProvider,
+			));
+		} else { // use contestant logic
+			
+
+			/* if id  = 0, list pages */
+			if ($id == 0){
+				$this->active = 'index';
+				$criteria = new CDbCriteria;
+				
+				if(isset($_GET['filter'])) {
+					$criteria->addCondition("title LIKE " . "'%" . $_GET['filter'] . "%'");
+				}
+				$listContest = Contest::model()->findAll($criteria);
+				$this->render('contestant/index',array(
+					'listContest'=>$listContest,
+				));
+			} else { /* render the announcement */
+				$this->redirect(array('news','id'=>$id));
+			}
 		}
-		
-		$dataProvider=new CActiveDataProvider('Contest', array(
-			'pagination' => array(
-				'pageSize' => 20,
-			),
-			'criteria' => $criteria,
-		));
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
+			
 	}
 
 	/**
 	 * Return list of contest submission 
 	 */
-
 	public function actionGrading($id)
 	{
+		//$this->active='grading';
 		$model = $this->loadModel($id);
 		if ($model == null){
 			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
-		$problemList = Contest::model()->getAllProblem($id);
+		if (isset($_POST['CheckList'])){
+			foreach($_POST['CheckList'] as $contestSubId=>$checked){
+				//echo $contestSubId;
+				if ($checked){
+					$contestSubmissionModel = ContestSubmission::model()->findByPk($contestSubId);
+					$contestSubmissionModel->grade();
+				}
+			}
+		}
+		//die("here");
+		$dataProvider = new CActiveDataProvider('ContestSubmission',array(
+				'criteria'=>array(
+					'condition'=>'contest_id=:contest_id',
+					'params'=>array('contest_id'=>$id),
+					'with'=>array('user'),
+					),
+				'pagination'=>array(
+					'pageSize'=>20,
+					),
+			));
+		$this->render('grading',array(
+			'model'=>$model,
+			'dataProvider'=>$dataProvider,
+			));
 
+	}
 
+	/**
+	 * update pembahasan kontes.
+	 */
+	public function actionUpdateDiscussion($id,$page = 0){
+		$model = $this->loadModel($id);
+		if ($model === null){
+			throw new CHttpException(404,"Contest not found");
+		}
+		
+		if(isset($_GET['renderImage'])) {
+			ob_clean();
+			$filename = $_GET['renderImage'];
+			$filepath = Utilities::getUploadedImagePath() . $_GET['renderImage'];
+			header('Content-Type: '. CFileHelper::getMimeType($filepath));
+			header('Content-Length: ' . filesize($filepath));
+			header('Content-Disposition: attachment; filename="' . $filename . '"');
+			readfile($filepath);
+			exit;
+		}
+
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'contest_id=:contest_id';
+		$criteria->params = array('contest_id'=>$id);
+		
+		$count = Problem::model()->count($criteria);
+		
+		$pages = new CPagination($count);
+		$pages->pageSize = 5;
+		$pages->currentPage = $page;
+		$pages->applyLimit($criteria);
+		
+		$listProblemData = Problem::model()->findAll($criteria);
+		
+		if(isset($_POST['Problem'])) {
+			foreach($listProblemData as $i=>$problem) {
+				if(isset($_POST['Problem'][$i])) {
+					foreach($_POST['Problem'][$i] as $key=>$value){
+						$problem->setAttribute($key,$value);
+					}
+					$problem->save();
+				}
+			}
+		}
+		
+		$this->render('teacher/updateDiscussion', array('listProblemData'=>$listProblemData, 'model'=>$model, 'page'=>$page, 'pagination'=>$pages,'controllerAction'=>'updateDiscussion'));
+
+	}
+	/**
+	 * List all announcement
+	 * @param id the contest id number
+	 */
+	public function actionNews($id){
+		Yii::app()->session['view_as'] = User::CONTESTANT;
+		$criteria = new CDbCriteria;
+		$criteria->condition = "contest_id=:contest_id";
+		$criteria->params = array('contest_id'=>$id,);
+
+		$listAnnouncement = ContestAnnouncement::model()->findAll($criteria);
+		$model = $this->loadModel($id);
+		$this->render('news',array(
+			'model'=>$model,
+			'listAnnouncement'=>$listAnnouncement,
+			'id'=>$id,
+			));
 	}
 
 	/**
@@ -496,7 +776,30 @@ class ContestController extends Controller
 			Yii::app()->end();
 		}
 	}
-	
+
+	/**
+	 * Register the user. insert a record into ContestUser schema
+	 * @param id contest_id
+	 */
+	public function actionRegister($id){
+		$model = $this->loadModel($id);
+
+		if (!ContestUser::model()->exists('contest_id=:contest_id AND user_id=:user_id',array('contest_id'=>$id,'user_id'=>Yii::app()->user->id))){
+			$contestUser = new ContestUser;
+			$contestUser->user_id = Yii::app()->user->id;
+			$contestUser->contest_id = $id;
+			if ($model->isOpen()){
+				$contestUser->approved = 1;
+			}
+			echo $contestUser->user_id;
+			echo $contestUser->contest_id;
+			echo $contestUser->approved;
+			//die("now");
+			$retval = $contestUser->save();
+		}
+		$this->redirect(array('view','id'=>$id));
+	}
+
 	public function actionRemoveContestant($userId, $contestId) {
 		if(!Self::userAuthenticated($contestId)) {
 			throw new CHttpException(403, "Anda tidak terauntentikasi untuk mengakses data ini.");
@@ -515,5 +818,103 @@ class ContestController extends Controller
 		$this->redirect(array('contestant', 'id'=>$contestId));
 	}
 
+
+
+	/**
+	 * return the problem model in JSON
+	 */
+	public function actionLoadProblem(){
+		$problemId = $_POST['pid']; //$_POST['pid']; //cara ngedebug, ganti $_POST jadi suatu problem_id
+		//$problemId = 52;
+		$problem = Problem::model()->findByPk($problemId);
+		$joinTable;
+		switch ($problem->type) {
+			case Problem::MULTIPLE_CHOICE:
+				$joinTable = 'problemChoice';
+				break;
+			case Problem::SHORT_ANSWER:
+				$joinTable = 'problemShort';
+			case Problem::ESSAY:
+				$joinTable = 'problemEssay';
+			default:
+				# code...
+				break;
+		}
+		$problem = Problem::model()->with($joinTable)->findByPk($problemId);
+		echo json_encode($problem->convertToArray());
+	}
+	/**
+	 * 
+	 */
+	public function actionSubmitAnswer(){
+		$problemId = $_POST['pid'];
+		$contestSubId = $_POST['contestSubId'];
+		$answer = $_POST['value'];
+		//echo json_encode($_POST);
+		//debug code. jangan dihapus. gw suka kelupaan.
+		//$problemId = 52;
+		//$contestSubId = 35;
+		//$answer = 1;
+		if ($contestSubId != null){
+			$model = Submission::model()->find('problem_id=:pid AND contest_submission_id=:csid',array('pid'=>$problemId,'csid'=>$contestSubId));	
+			if ($model == null){
+				$model = new Submission;
+				$model->problem_id = $problemId;
+				$model->contest_submission_id  = $contestSubId;
+				$model->answer = $answer;
+				$model->save();
+			} else {
+				$model->answer = $answer;
+				$model->save();
+			}
+			
+			//$model->save();
+			echo json_encode(array('ok'));
+			//echo json_encode(array('result'=>$model->save()));
+		}
+	}
+
+	/**
+	 * return the administrator status of logged in user
+	 * @return boolean 
+	 */
+	public function isAdmin(){
+		return Yii::app()->user->isAdmin;
+	}
+
+	/**
+	 * cek apakah contest terbuka untuk register
+	 */
+	public function isOpenForRegister(){
+		if (isset($_GET['id']) && $_GET['id'] > 0){
+			$model = Contest::model()->findByPk($_GET['id']);
+			return $model->isOpen() || $model->isConditional();
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * cek apakah current user boleh mengganti kontes.
+	 */
+	public function isApprovedTeacher(){
+		if (isset($_GET['id'])){
+			return Yii::app()->user->isAdmin || (Yii::app()->user->isTeacher && ContestUser::isCurrentUserRegistered($_GET['id']));
+		} else {
+			return false;
+		}
+		
+	}
+	/**
+	 * cek apakah user boleh mengikuti kontes
+	 */
+	public function isApprovedContestant(){
+		if (isset($_GET['id'])){
+			return ContestUser::isCurrentUserRegistered($_GET['id']);
+		} else {
+			return false;
+		}
+		
+	}
 	
 }

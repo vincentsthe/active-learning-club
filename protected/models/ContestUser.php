@@ -116,4 +116,24 @@ class ContestUser extends CActiveRecord
 		}
 		return parent::beforeDelete();
 	}
+
+	/**
+	 * return the Contest User Model based on logged in user and contest id
+	 * @param contestId int the user id
+	 * @return boolean
+	 */
+	public static function isCurrentUserRegistered($contestId){
+		$contestUserModel = ContestUser::model()->getCurrentUserModel($contestId);
+		return $contestUserModel->approved;
+	}
+	/**
+	 *
+	 */
+	public function getCurrentUserModel($contestId){
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'contest_id=:contest_id AND user_id=:user_id';
+		$criteria->params = array('contest_id'=>$contestId,'user_id'=>Yii::app()->user->id);
+		$contestUserModel = ContestUser::model()->find($criteria);
+		return $contestUserModel;
+	}
 }

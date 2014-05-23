@@ -24,10 +24,13 @@
  */
 class Contest extends CActiveRecord
 {
-	const NOT_REGISTERED = -1;
-	const NOT_STARTED = 0;
-	const STARTED = 1;
-	const ENDED = 2;
+	const NOT_REGISTERED = -2; //belum register
+	const NOT_APPROVED = -1; //udah daftar, belum di ACC sama admin
+	const NOT_STARTED = 0; //kontes belum dimulai
+	const NOT_WORKED = 1; //kontes sudah dimulai, belum dikerjakan
+	const WORKED = 2; // kontes sedang dikerjakan
+	const TIME_UP = 3; // waktu pengerjaan sudah habis
+	const ENDED = 4; //kontes telah berkahir
 
 	const OPEN = 0;
 	const CLOSED = 1;
@@ -216,6 +219,10 @@ class Contest extends CActiveRecord
 		return Problem::model()->findAll($criteria);
 	}
 	
+	/**
+	 * menambahkan kontestan ke kontes. update isi ContestUser
+	 * @param $userId id dari user yang ingin ditambahkan.
+	 */
 	public function addToContest($userId) {
 		$register = new ContestUser;
 		$register->contest_id = $this->id;
@@ -232,6 +239,10 @@ class Contest extends CActiveRecord
 		}
 	}
 	
+	/**
+	 * menghapus kontestan dari kontes. update isi ContestUser.
+	 * @param $userId id dari user yang dihapus
+	 */
 	public function removeFromContest($userId) {
 		$criteria = new CDbCriteria;
 		$criteria->condition = "contest_id=:contest_id AND user_id=:user_id";
@@ -241,6 +252,99 @@ class Contest extends CActiveRecord
 		if($register != null) {
 			$register->delete();
 		}
+	}
+
+	/**
+	 * menentukan status pengerjaan kontes dari user yang login.
+	 * @return string
+	 */
+	public function contestStatus(){
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'contest_id=:contest_id AND user_id=:user_id';
+		$criteria->params = array('contest_id'=>$this->id,'user_id'=>Yii::app()->user->id);
+		$contestUserModel = ContestUser::model()->find($criteria);
+		$contestStartTime = $this->start_time;
+		$contestEndTime = $this->end_time;
+		$currentTime = time();
+		$csModel = ContestSubmission::model()->find($criteria);
+
+		if ($contestUserModel == null){ 
+			//tidak terdaftar.
+			return Self::NOT_REGISTERED;
+		} else if ($contestEndTime < $currentTime){ 
+			//sudah selesai
+			return Self::ENDED;
+		} else if (!$contestUserModel->approved){
+			//belum di ACC
+			return Self::NOT_APPROVED;
+		} else {
+			if ($currentTime < $contestStartTime){
+				//udah daftar, belum mulai
+				return Self::NOT_STARTED;
+			} else if($csModel == null){
+				//udah daftar, belum kerja
+				return Self::NOT_WORKED;
+			} else if ($currentTime < $csModel->end_time){
+				//udah daftar, sudah kerja, waktu masih ada
+				return Self::WORKED;
+			} else {
+				//udah daftar, sudah kerja, waktu udah habis
+				return Self::TIME_UP;
+			}
+		}
+	}
+
+	public static function contestStatusMessage($status){
+		switch ($status) {
+			case Self::NOT_REGISTERED:
+				return "Anda tidak/belum mendaftar.";
+				break;
+			case Self::NOT_APPROVED:
+				return "Silakan lengkapi syarat administrasi.";
+				break;
+			case Self::NOT_STARTED:
+				return "Kontes belum dimulai.";
+				break;
+			case Self::NOT_WORKED:
+				return "Anda bisa mulai mengerjakan kontes ini.";
+				break;
+			case Self::TIME_UP:
+				return "Waktu pengerjaan sudah habis. Silakan tunggu sampai kontes berakhir.";
+				break;
+			case Self::WORKED:
+				return "Silakan lanjutkan kontes sampai waktu habis.";
+				break;
+			case Self::ENDED:
+				return "Kontes telah berakhir.";
+				break;
+			default:
+				# code...
+				break;
+		}
+	}
+
+	/**
+	 * cek apakah sifat kontes terbuka.
+	 * @return boolean
+	 */
+	public function isOpen(){
+		return Self::OPEN == $this->sifat;
+	}
+
+	/**
+	 * cek apakah sifat kontes tertutup
+	 * @return boolean
+	 */
+	public function isClosed(){
+		return Self::CLOSED == $this->sifat;
+	}
+
+	/**
+	 * cek apakah sifat kontes kondisional (tertutup namun boleh mendaftar)
+	 * @return boolean
+	 */
+	public function isConditional(){
+		return Self::CONDITIONAL == $this->sifat;
 	}
 
 }
