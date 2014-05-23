@@ -29,8 +29,8 @@
 	<div class="header container-fluid">
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-1">
-					<!--img src="<?php echo Yii::app()->request->baseUrl; ?>/images/Banner.png" height="130px"-->
+				<div class="col-xs-1" style="margin-top:10px top bottom;" >
+					<img src="<?php echo Yii::app()->request->baseUrl; ?>/images/header-logo.png" width="70px">
 				</div>
 				<div class="col-xs-10">
 					<h3>ALC Learning Center</h3>
@@ -53,7 +53,6 @@
 				</li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="about"):?>class="active"<?php endif;?>><?php echo CHtml::link("About Us", array('site/page','view'=>'about'))?></li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="contact"):?>class="active"<?php endif;?>><?php echo CHtml::link("Kontak", array('site/page','view'=>'contact'))?></li>
-				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="image"):?>class="active"<?php endif;?>><?php echo CHtml::link("Image", array('image/index'))?></li>
 				<li <?php if(isset($this->topBarActive) && $this->topBarActive=="career"):?>class="active"<?php endif;?>><?php echo CHtml::link("Karir", array('site/page','view'=>'career'))?></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">

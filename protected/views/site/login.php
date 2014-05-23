@@ -9,17 +9,14 @@ $this->breadcrumbs=array(
 );
 ?>
 
+
+
+<div class="col-xs-12">
+<div class="col-xs-4"></div>
+<div class="col-xs-4">
+
+<center>
 <h1>Login</h1>
-
-<p>Please fill out the following form with your login credentials:</p>
-
-<div class="col-md-12">
-
-
-	<div class="col-md-7">
-	apalah
-	</div>
-	<div class="col-md-5">
 		<?php $form=$this->beginWidget('CActiveForm', array(
 			'id'=>'login-form',
 			'enableClientValidation'=>true,
@@ -42,10 +39,9 @@ $this->breadcrumbs=array(
 		<div style="padding:10px">
 		<?php echo $form->checkBox($model,'rememberMe'); ?>
 		<?php echo $form->label($model,'rememberMe',array('class'=>'rememberMe')); ?>
-		<?php echo $form->error($model,'rememberMe'); ?>
+		<?php echo $form->error($model,'rememberMe'); ?><br>
 		<?php echo CHtml::submitButton('Login',array('class'=>'btn btn-primary')); ?>
 		</div>
 Belum punya akun? Silakan <b><?php echo CHtml::Link('daftar di sini',array('site/register'));?></b>. Gratis!
 <?php $this->endWidget(); ?>
-	</div>
-</div>
+</div><div class="col-xs-4"></div></center></div>

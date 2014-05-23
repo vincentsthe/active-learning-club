@@ -8,30 +8,24 @@ $this->breadcrumbs=array(
 	'Login',
 );
 ?>
-<div class="col-xs-12">
-<h2>Register</h2>
-<div class="col-xs-7">
-
-<h3>Snack gratis</h3>
-<p>The clusters of criteria are the five main personality dimensions 
-considered to be essential in the professional world: Communicate, 
-Manage, Dare, Adapt, Excel. For each dimension, Talentoday gives you the 
-opportunity to discover the behaviors you tend to adopt, that is to say the 
-way you prefer to act in the professional realm.</p>
-<h3>Snack gratis</h3>
-<p>The clusters of criteria are the five main personality dimensions 
-considered to be essential in the professional world: Communicate, 
-Manage, Dare, Adapt, Excel. For each dimension, Talentoday gives you the 
-opportunity to discover the behaviors you tend to adopt, that is to say the 
-way you prefer to act in the professional realm.</p>
-<h3>Snack gratis</h3>
-<p>The clusters of criteria are the five main personality dimensions 
-considered to be essential in the professional world: Communicate, 
-Manage, Dare, Adapt, Excel. For each dimension, Talentoday gives you the 
-opportunity to discover the behaviors you tend to adopt, that is to say the 
-way you prefer to act in the professional realm.</p>
+<div class="col-xs-12"><br>
+<div class="col-xs-8">
+<h3>
+<center>ALC learning center adalah tempat untuk mempersiapkan diri kamu untuk mengikuti olimpiade sains nasional</center>
+</h3>
+<hr>
+<div class="col-xs-4"><center><h5>Tryout Gratis</h5><img src="<?php echo Yii::app()->baseUrl?>/images/monitor.png"></center></div>
+<div class="col-xs-4"><center><h5>Ranking Skala Nasional</h5><img src="<?php echo Yii::app()->baseUrl?>/images/trophy.png"></center></div>
+<div class="col-xs-4"><center><h5>Buat Tryout Sendiri!</h5><img src="<?php echo Yii::app()->baseUrl?>/images/setting.png"></center></div>
+<hr>
 </div>
-<div class="col-xs-5">
+<div class="col-xs-4">
+
+<?php if(Yii::app()->user->hasFlash('error')): ?>
+	<div class="alert alert-danger">
+		<?php echo Yii::app()->user->getFlash('error'); ?>
+	</div>
+<?php endif; ?>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'register-form',
@@ -41,9 +35,10 @@ way you prefer to act in the professional realm.</p>
 	),
 	'enableAjaxValidation'=>true,
 )); ?>
-Sudah punya akun? <?php echo CHtml::link('Login',array('site/login')); ?>
-
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+<center>
+	Sudah punya akun? <?php echo CHtml::link('Login',array('site/login')); ?>
+</center><br>
+	<p class="note">Daftarkan diri anda. Gratis!. </p>
 		<?php echo $form->labelEx($model,'username'); ?>
 		<?php echo $form->textField($model,'username',array('class'=>'form-control','placeholder'=>'username')); ?>
 		<?php echo $form->error($model,'username',array('style'=>'color:red')); ?>
@@ -68,6 +63,7 @@ Sudah punya akun? <?php echo CHtml::link('Login',array('site/login')); ?>
 		<?php echo $form->textField($model,'school',array('class'=>'form-control','placeholder'=>'asal sekolah')); ?>
 		<?php echo $form->error($model,'school',array('style'=>'color:red')); ?>
 	<!-- <br> -->
+	<br>
 	<div class="row buttons">
 		<center><?php echo CHtml::submitButton('Register',array('class'=>'btn btn-primary')); ?></center>
 	</div>
