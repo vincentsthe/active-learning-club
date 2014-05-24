@@ -74,7 +74,7 @@ class ContestController extends Controller
 			//dua ini gw special case karena males banget (pake jquery dia)
 			//bisa jadi loophole security (misal kebanyakan diklik. tapi enggak lah ya)
 			array('allow',
-				'actions'=>array('submitAnswerWithAjax','loadProblemWithAjax','image'),
+				'actions'=>array('submitAnswerWithAjax','loadProblemWithAjax','loadProblem','submitAnswer','image'),
 				'users'=>array('@'),
 			),
 			//hanya apporved
@@ -612,6 +612,7 @@ class ContestController extends Controller
 	public function actionIndex($id = 0)
 	{
 		$this->active = 'contest/index';
+		$bidang = Bidang::findAllBidang();
 		if (Yii::app()->user->isAdmin || Yii::app()->user->isTeacher){ //use manager logic.
 			$criteria = new CDbCriteria;
 			
@@ -627,10 +628,9 @@ class ContestController extends Controller
 			));
 			$this->render('teacher/index',array(
 				'dataProvider'=>$dataProvider,
+				'bidang'=>$bidang,
 			));
 		} else { // use contestant logic
-			
-
 			/* if id  = 0, list pages */
 			if ($id == 0){
 				$this->active = 'index';
@@ -642,6 +642,7 @@ class ContestController extends Controller
 				$listContest = Contest::model()->findAll($criteria);
 				$this->render('contestant/index',array(
 					'listContest'=>$listContest,
+					'bidang'=>$bidang,
 				));
 			} else { /* render the announcement */
 				$this->redirect(array('news','id'=>$id));
@@ -883,7 +884,6 @@ class ContestController extends Controller
 	}
 	public function actionSubmitAnswerWithAjax($contestSubId){
 		if (isset($_POST['Answer'])){
-			Yii::trace("hello");
 			$criteria = new CDbCriteria;
 
 			foreach ($_POST['Answer'] as $problemId=>$answer){
@@ -912,29 +912,29 @@ class ContestController extends Controller
 			}
 		}
 	}
-	// /**
-	//  * return the problem model in JSON
-	//  */
-	// public function actionLoadProblem(){
-	// 	$problemId = $_POST['pid']; //$_POST['pid']; //cara ngedebug, ganti $_POST jadi suatu problem_id
-	// 	//$problemId = 52;
-	// 	$problem = Problem::model()->findByPk($problemId);
-	// 	$joinTable;
-	// 	switch ($problem->type) {
-	// 		case Problem::MULTIPLE_CHOICE:
-	// 			$joinTable = 'problemChoice';
-	// 			break;
-	// 		case Problem::SHORT_ANSWER:
-	// 			$joinTable = 'problemShort';
-	// 		case Problem::ESSAY:
-	// 			$joinTable = 'problemEssay';
-	// 		default:
-	// 			# code...
-	// 			break;
-	// 	}
-	// 	$problem = Problem::model()->with($joinTable)->findByPk($problemId);
-	// 	echo json_encode($problem->convertToArray());
-	// }
+	/**
+	 * return the problem model in JSON
+	 */
+	public function actionLoadProblem(){
+		$problemId = $_POST['pid']; //$_POST['pid']; //cara ngedebug, ganti $_POST jadi suatu problem_id
+		//$problemId = 52;
+		$problem = Problem::model()->findByPk($problemId);
+		$joinTable;
+		switch ($problem->type) {
+			case Problem::MULTIPLE_CHOICE:
+				$joinTable = 'problemChoice';
+				break;
+			case Problem::SHORT_ANSWER:
+				$joinTable = 'problemShort';
+			case Problem::ESSAY:
+				$joinTable = 'problemEssay';
+			default:
+				# code...
+				break;
+		}
+		$problem = Problem::model()->with($joinTable)->findByPk($problemId);
+		echo json_encode($problem->convertToArray());
+	}
 	// /**
 	//  * 
 	//  */

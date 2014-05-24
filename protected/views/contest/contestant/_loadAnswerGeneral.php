@@ -1,10 +1,12 @@
-<div class="col-xs-1">
-</div>
-<div class="col-xs-11">
+<div class="a-content" rel="<?php echo $problem->id; ?>">
 <?php
-$answer = $submission->answer();
+$answer = ($submission !== null)?$submission:'';
 if ($problem->type == Problem::MULTIPLE_CHOICE){
-	echo CHtml::radioButtonList("Answer[$problem->id]",'1',array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F'));
+	for($i = 1; $i <= 5; $i++){
+		$chr = chr($i - 1 + ord('A'));
+		echo "<input type=radio name=Answer[$problem->id][answer] value='$i' ".($answer===$i)?"checked":""."/>$chr  &nbsp";
+	}
+	echo "<input type=radio name=Answer[$problem->id][answer] value=''".($answer==='')?'checked':''."/><i>kosong</i>";
 ?>
 
 <?php } else if ($problem->type == Problem::SHORT_ANSWER){

@@ -11,10 +11,10 @@ Yii::import('ext.Utilities')
 	<div class="panel-heading">
 		<h4 class="pull-left">Daftar Kontes</h4>
 		<form name="form1" class="form form-inline pull-right p-r-10" action="?" method="GET">
-			<div class="input-group" style="width: 300px">
+			<div class="input-group">
 				<input type="text" class="form-control" name="filter" value="<?php if(isset($_GET['filter'])) echo $_GET['filter']; ?>">
 				<span class="input-group-btn">
-					<button class="btn btn-default" type="button" onclick="document.form1.submit()"><span class="glyphicon glyphicon-search"></span></button>
+					<button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
 				</span>
 			</div>
 		</form>
@@ -59,5 +59,8 @@ Yii::import('ext.Utilities')
 		)
 	)); ?>
 </div>
-
+<?php Yii::app()->CClientScript->registerScript('koyek',"
+<script>
+</script>
+",CClientScript::POS_END;?>
 <?php $gridView->renderPager(); ?>

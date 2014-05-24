@@ -142,10 +142,10 @@ class ContestSubmission extends CActiveRecord
 				$totalScore += $problem->blank_score;
 			} else if($submission->answer == $problem->answer) {
 				$correctAnswer++;
-				$totalScore += $correctScore;
+				$totalScore += $problem->correct_score;
 			} else {
 				$wrongAnswer++;
-				$totalScore += $wrongScore;
+				$totalScore += $problem->wrong_score;
 			}
 		}
 		

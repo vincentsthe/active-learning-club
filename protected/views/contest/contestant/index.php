@@ -3,16 +3,34 @@ Yii::import('ext.Utilities')
 
 /* @var $this ContestController */
 /* @var $listContest array of contest model */
+/* @var $bidang array of bidang (no.=>name) */
 ?>
 	<h1>Daftar Kontes</h1>
-			<form name="form1" class="form form-inline pull-right p-r-10" action="?" method="GET">
-				<div class="input-group" style="width: 300px">
+		<form name="form1" class="form form-inline p-r-10" action="?" method="GET">
+			<div class="col-xs-12">
+				<div class="col-xs-8">
+					<b>Bidang:</b><br>
+					<?php
+						//bagi 2 layout
+						$countBidang = count($bidang); $iterator = 0;
+						echo "<div class='col-xs-6'>";
+						foreach($bidang as $id=>$name){
+							echo CHtml::checkBox("Bidang[$id]")."$name<br>";
+							$iterator++;
+							if ($iterator == floor($countBidang/2))
+								echo "</div><div class='col-xs-6'>";
+						}
+					echo "</div>";
+					?>
+				</div>
+				<div class="col-xs-4 input-group">
 					<input type="text" class="form-control" name="filter" value="<?php if(isset($_GET['filter'])) echo $_GET['filter']; ?>">
 					<span class="input-group-btn">
-						<button class="btn btn-default" type="button" onclick="document.form1.submit()"><span class="glyphicon glyphicon-search"></button>
+						<button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></button>
 					</span>
 				</div>
 			</form>
+			</div>
 			<div class="clearfix"> </div>
 	<br>
 	<?php foreach ($listContest as $key => $contest): ?>

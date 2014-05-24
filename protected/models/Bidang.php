@@ -121,4 +121,5 @@ class Bidang extends CActiveRecord
 	public static function namaBidang($id){
 		return Self::model()->findByPk($id)->nama;
 	}
+	
 }

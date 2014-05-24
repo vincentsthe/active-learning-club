@@ -133,5 +133,4 @@ class User extends CActiveRecord
 		return $user->password == sha1($password);
 	}
 
-
 }
