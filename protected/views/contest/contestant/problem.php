@@ -7,7 +7,8 @@
 
 $firstProblemId = ($problemList === null)?0:$problemList[0]->id;
 $timeLeft = $contestSubModel->end_time - time(); if ($timeLeft < 0) $timeLeft = 0;
-Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascripts/mathjax.min.js',CClientScript::POS_HEAD);
+//Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascripts/mathjax.min.js',CClientScript::POS_HEAD);
+Yii::app()->getClientScript()->registerScriptFile("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML");
 Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascripts/problem.js',CClientScript::POS_HEAD);
 ?>
 
@@ -21,7 +22,7 @@ Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascri
 	echo CHtml::ajaxSubmitButton(
 		'Simpan Jawaban',
 		CController::createUrl('contest/submitAnswerWithAjax',array('contestSubId'=>$contestSubModel->id)),
-		array('success'=>'alert("ganteng")'),
+		array('success'=>'nSS()'),
 		array('class'=>'btn btn-success')
 	);
 ?>
@@ -68,7 +69,7 @@ Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascri
 		array('success'=>'function(){nSS();}'),
 		array('class'=>'btn btn-success')
 	);
-?>?>
+?>
 <?php echo CHtml::endForm(); ?>
 <script>var firstProblemId = <?php echo $firstProblemId; ?></script>
 <?php 

@@ -187,7 +187,7 @@ class ContestSubmission extends CActiveRecord
 		return ContestSubmission::model()->find($criteria);
 	}
 	/**
-	 * get array of submissions with indexed places
+	 * get array of submissions with indexed places based on problem id
 	 * for example array[i] have submission with problem id = i.
 	 * @return CActiveRecord Submission Model
 	 */
@@ -195,7 +195,7 @@ class ContestSubmission extends CActiveRecord
 		$tmp = $this->submissions;
 		$submissions = array();
 		foreach($tmp as $submission){
-			$submissions[$submission->id] = $submission;
+			$submissions[$submission->problem_id] = $submission;
 		}
 		return $submissions;
 

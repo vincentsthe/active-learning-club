@@ -1,12 +1,14 @@
 <div class="a-content" rel="<?php echo $problem->id; ?>">
 <?php
-$answer = ($submission !== null)?$submission:'';
+
+$answer = ($submission !== null)?$submission->answer:'';
 if ($problem->type == Problem::MULTIPLE_CHOICE){
 	for($i = 1; $i <= 5; $i++){
 		$chr = chr($i - 1 + ord('A'));
-		echo "<input type=radio name=Answer[$problem->id][answer] value='$i' ".($answer===$i)?"checked":""."/>$chr  &nbsp";
+		$checked = ($i == $answer)?'checked':'';
+		echo "<input type=radio name=Answer[$problem->id][answer] value='$i' $checked/>$chr  &nbsp";
 	}
-	echo "<input type=radio name=Answer[$problem->id][answer] value=''".($answer==='')?'checked':''."/><i>kosong</i>";
+	echo "<input type=radio name=Answer[$problem->id][answer] value=''/><i>kosong</i>";
 ?>
 
 <?php } else if ($problem->type == Problem::SHORT_ANSWER){

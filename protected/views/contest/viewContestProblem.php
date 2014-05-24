@@ -6,8 +6,8 @@
 /* @var $pagination				pagination object*/
 
 $number = $pagination->pageSize * $pagination->currentPage + 1;
-//Yii::app()->getClientScript()->registerScriptFile("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML");
-Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseUrl."/javascripts/mathjax.min.js");
+Yii::app()->getClientScript()->registerScriptFile("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML");
+//Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseUrl."/javascripts/mathjax.min.js");
 ?>
 
 <?php if ($listProblem == null) throw new CHttpException(123,"listproblem kosong"); ?>
