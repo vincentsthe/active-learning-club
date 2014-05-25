@@ -61,7 +61,7 @@ class ContestController extends Controller
 			),
 			//hanya approved teacher yang boleh melakukan
 			array('allow',
-				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading','image','removeContestSubmission'),
+				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','approveContestantWithAjax','grading','image','removeContestSubmission'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedTeacher'),
 			),
@@ -818,6 +818,22 @@ class ContestController extends Controller
 		Contest::model()->findByPk($id)->addToContest($userId);
 		$this->redirect(array('contestant', 'id'=>$id));
 	}
+
+	public function actionApproveContestantWithAjax($id){
+		if (isset($_POST['ContestUser'])){
+			foreach($_POST['ContestUser'] as $key=>$contestUser){
+				$userId = $key;
+				$contestUserModel = ContestUser::model()->find("contest_id=$id AND user_id=$userId");
+				if ($contestUser['approved']){
+					$contestUserModel->approveUser();
+				} else {
+					$contestUserModel->denyUser();
+				}
+			}
+		}
+		echo json_encode(array()); 
+	}
+
 
 	public function actionRemoveContestSubmission($id,$contestSubId){
 		$model = ContestSubmission::model()->findByPk($contestSubId);

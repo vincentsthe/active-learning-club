@@ -9,8 +9,39 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 
 <?php $this->renderPartial('_header',array('model'=>$model)); ?>
 <?php $this->renderPartial('_menubar',array('activeMenuBar'=>'contestant')); ?>
-<div class="form">
+<div><center id="server-info"></center></div>
+<?php /* accept or deny user */ ?>
+<?php $form=$this->beginWidget('CActiveForm', array(
+        //no need for validatidon
+)); ?>
 	<table class="table table-striped">
+		<tr>
+			<th>Username</th>
+			<th>Nama Lengkap</th>
+			<th>Asal Sekolah</th>
+			<th>Terima</th>
+			<th> </th>
+		</tr>
+		<?php foreach($contestUserList as $contestUser): ?>
+			<tr>
+				<td><?php echo $contestUser->user->username; ?></td>
+				<td><?php echo $contestUser->user->fullname; ?></td>
+				<td><?php echo $contestUser->user->school; ?></td>
+				<td><?php echo $form->checkBox($contestUser,"[$contestUser->user_id]approved",array('checked'=>$contestUser->approved)); 
+				//$userId = $contestUser->user->id; echo CHtml::activeCheckBox($contestUser,"[$userId]approved",array('checked'=>$contestUser->approved)); ?></td>
+				<td><?php echo CHtml::link('<span class="glyphicon glyphicon-remove"></span>', array(
+					'contest/removeContestant',
+					'id' => $model->id,
+					'userId' => $contestUser->user->id,
+				)); ?>
+				</td>
+			</tr>
+		<?php endforeach;?>
+	</table>
+	<?php echo CHtml::ajaxSubmitButton('Simpan',CController::createUrl('contest/approveContestantWithAjax',array('id'=>$model->id)),array('success'=>'alert("berhasil")','error'=>'alert("gagal")'),array('class'=>'btn btn-primary')); ?>
+<?php $this->endWidget(); ?>
+<div class="form">
+<table class="table table-striped">
 		<tr>
 			<th>Username</th>
 			<th>Nama Lengkap</th>
@@ -32,9 +63,9 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 				</td>
 			</tr>
 		<?php endforeach;?>
-		<center></center>
 	</table>
-	
+</div>
+<div class="form">
 	<h3>Tambah Peserta</h3>
 	<div class="row">
 		<form action="?" method="GET">
@@ -77,5 +108,14 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 
 		$gridView->renderPager();
 	?>
-
 </div>
+<?php Yii::app()->clientScript->registerScript('hello',
+"function infoSuccess(message){
+	$('#server-info').html(message);
+	$('#server-info').attr('color','2dc400');
+}
+function infoError(message){
+	$('#server-info').html(message);
+	$('#server-info').attr('color','ff0000');
+}");
+?>

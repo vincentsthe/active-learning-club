@@ -136,4 +136,22 @@ class ContestUser extends CActiveRecord
 		$contestUserModel = ContestUser::model()->find($criteria);
 		return $contestUserModel;
 	}
+	/**
+	 * approve current contestant
+	 */
+	public function approveUser(){
+		if ($this !== null){
+			$this->approved = 1;
+			$this->save();
+		}
+	}
+	/**
+	 * deny current contestant
+	 */
+	public function denyUser(){
+		if ($this !== null){
+			$this->approved = 0;
+			$this->save();
+		}
+	}
 }
