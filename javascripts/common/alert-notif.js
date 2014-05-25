@@ -1,0 +1,1 @@
+function notif(m,id,c){$('#'+id).html(m);$('#'+id).attr('class','alert '+c);$('#'+id).html(m).show();}

@@ -61,13 +61,13 @@ class ContestController extends Controller
 			),
 			//hanya approved teacher yang boleh melakukan
 			array('allow',
-				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','approveContestantWithAjax','grading','image','removeContestSubmission'),
+				'actions'=>array('delete','update','scoring','grading','contestant','removeContestantWithAjax','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','approveContestantWithAjax','grading','image','removeContestSubmission'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedTeacher'),
 			),
 			//kontestan dan manager yang approved yang boleh melakukan
 			array('allow',
-				'actions'=>array('start','news','problem','scoreboard','image'),
+				'actions'=>array('start','news','problem','scoreboard','image','viewDiscussion'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedContestant'),
 			),
@@ -94,7 +94,7 @@ class ContestController extends Controller
 		$model = $this->loadModel($id);
 		$contestSubModel = ContestSubmission::model()->getCurrentUserModel($id);
 		$contestStatus = $model->contestStatus();
-		$contestantList = $model->users;
+		$contestantList = ContestUser::model()->with('user')->findAll("contest_id=$id");
 		
 		
 		$this->render('view',array(
@@ -259,7 +259,7 @@ class ContestController extends Controller
 			}
 			$contestModel->start_time = Utilities::formattedDateToTimestamp($_POST['ContestForm']['start_time']);
 			$contestModel->end_time = Utilities::formattedDateToTimestamp($_POST['ContestForm']['end_time']);
-			
+			$contestModel->sifat = $_POST['ContestForm']['sifat'];
 			if($contestModel->save()){
 				$this->redirect(array('view','id'=>$contestModel->id));
 			}
@@ -344,7 +344,7 @@ class ContestController extends Controller
 	 */
 	public function actionContestant($id){
 		$model = $this->loadModel($id);
-		if ($model == null){
+		if ($model === null){
 			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
 		$contestUserList = ContestUser::model()->with('user')->findAll('contest_id=:contest_id',array('contest_id'=>$id));
@@ -611,15 +611,28 @@ class ContestController extends Controller
 	 */
 	public function actionIndex($id = 0)
 	{
+		//die($id);
 		$this->active = 'contest/index';
+		$filter = array();
 		$bidang = Bidang::findAllBidang();
-		if (Yii::app()->user->isAdmin || Yii::app()->user->isTeacher){ //use manager logic.
-			$criteria = new CDbCriteria;
-			
-			if(isset($_GET['filter'])) {
-				$criteria->addCondition("title LIKE " . "'%" . $_GET['filter'] . "%'");
+		/*
+		foreach($bidang as $key=>$nama){
+			$filter['bidang'][$key]['nama'] = $nama;
+			$filter['bidang'][$key]['checked'] = 1;
+		}*/
+		$criteria = new CDbCriteria;
+
+		if(isset($_POST['filter'])){
+			foreach($_POST['filter'] as $key=>$value){
+				if ($key == 'title'){
+					$criteria->addCondition("title LIKE " . "'%" . $value . "%'");
+				} else if ($key == 'bidang' && $value != 0){
+					$criteria->addCondition("bidang = $value");
+				}
 			}
-			
+			//die("here")
+		}
+		if (Yii::app()->user->isAdmin || Yii::app()->user->isTeacher){ //use manager logic.
 			$dataProvider=new CActiveDataProvider('Contest', array(
 				'pagination' => array(
 					'pageSize' => 20,
@@ -628,21 +641,17 @@ class ContestController extends Controller
 			));
 			$this->render('teacher/index',array(
 				'dataProvider'=>$dataProvider,
-				'bidang'=>$bidang,
+				'listBidang'=>$bidang,
+				'filter'=>$filter,
 			));
 		} else { // use contestant logic
 			/* if id  = 0, list pages */
 			if ($id == 0){
-				$this->active = 'index';
-				$criteria = new CDbCriteria;
-				
-				if(isset($_GET['filter'])) {
-					$criteria->addCondition("title LIKE " . "'%" . $_GET['filter'] . "%'");
-				}
 				$listContest = Contest::model()->findAll($criteria);
 				$this->render('contestant/index',array(
 					'listContest'=>$listContest,
-					'bidang'=>$bidang,
+					'listBidang'=>$bidang,
+					'filter'=>$filter,
 				));
 			} else { /* render the announcement */
 				$this->redirect(array('news','id'=>$id));
@@ -680,6 +689,23 @@ class ContestController extends Controller
 				'pagination'=>array(
 					'pageSize'=>20,
 					),
+				'sort'=>array(
+					'attributes'=>array(
+						'Username'=>array(
+							'asc'=>'username',
+							'desc'=>'username DESC',
+							),
+						'Name'=>array(
+							'asc'=>'username',
+							'desc'=>'username DESC',
+							),
+						'sekolah'=>array(
+							'asc'=>'school',
+							'desc'=>'school desc',
+							),
+						'*',
+						),
+				),
 			));
 		$this->render('grading',array(
 			'model'=>$model,
@@ -831,7 +857,13 @@ class ContestController extends Controller
 				}
 			}
 		}
-		echo json_encode(array()); 
+	}
+
+	public function actionRemoveContestantWithAjax($id,$userId){
+		$contestUserModel = ContestUser::model()->find("contest_id=$id AND user_id=$userId");
+		if ($contestUserModel !== null){
+			$contestUserModel->delete();
+		}
 	}
 
 
@@ -844,7 +876,8 @@ class ContestController extends Controller
 
 	public function actionProblem($id){
 		$model = $this->loadModel($id);
-		if ($model == null){
+		$this->topBarActive = "contest/problem";
+		if ($model === null){
 			throw new CHttpException(404,"Kontes tidak ditemukan");
 		}
 		

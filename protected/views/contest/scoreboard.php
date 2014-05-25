@@ -23,8 +23,9 @@
 					return $data->user->school;
 				}
 			),
-			'score'
+			'score',
 		),
+		'itemsCssClass'=>'table table-striped'
 	));
 	// $gridView = $this->widget('zii.widgets.grid.CGridView', array(
 	// 	'dataProvider'=>$dataProvider,

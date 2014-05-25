@@ -124,7 +124,10 @@ class ContestUser extends CActiveRecord
 	 */
 	public static function isCurrentUserRegistered($contestId){
 		$contestUserModel = ContestUser::model()->getCurrentUserModel($contestId);
-		return $contestUserModel->approved;
+		if ($contestUserModel !== null)
+			return $contestUserModel->approved;
+		else
+			return 0;
 	}
 	/**
 	 *

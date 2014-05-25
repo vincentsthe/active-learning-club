@@ -64,13 +64,15 @@ Yii::import('ext.Utilities');
 		<th>Username</th>
 		<th>Nama Lengkap</th>
 		<th>Asal Sekolah</th>
+		<th>Diterima</th>
 	</tr>
 	<?php foreach($contestantList as $contestant): ?>
 		<tr>
-			<td><?php echo $contestant->id; ?></td>
-			<td><?php echo $contestant->username; ?></td>
-			<td><?php echo $contestant->fullname; ?></td>
-			<td><?php echo $contestant->school; ?></td>
+			<td><?php echo $contestant->user->id; ?></td>
+			<td><?php echo $contestant->user->username; ?></td>
+			<td><?php echo $contestant->user->fullname; ?></td>
+			<td><?php echo $contestant->user->school; ?></td>
+			<td><?php echo ($contestant->approved)?'<span class="glyphicon glyphicon-ok"></span>':''; ?></td>
 		</tr>
 	<?php endforeach?>
 </table>

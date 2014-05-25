@@ -186,6 +186,7 @@ class ContestSubmission extends CActiveRecord
 		$criteria->params = array('contest_id'=>$contestId,'user_id'=>Yii::app()->user->id);
 		return ContestSubmission::model()->find($criteria);
 	}
+	
 	/**
 	 * get array of submissions with indexed places based on problem id
 	 * for example array[i] have submission with problem id = i.

@@ -5,9 +5,10 @@ function createTimer(seconds){
 
 function Tick(){
 	totalSeconds -= 1;
-	if (totalSeconds >= 0){
+	if (totalSeconds > 0){
 		$("#timer").html(timerHTML(totalSeconds));
 	} else {
+		$("#save-answer").hide();
 		$("#timer").hide();
 	}
 	window.setTimeout("Tick()",1000);
