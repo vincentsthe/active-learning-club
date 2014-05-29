@@ -34,9 +34,9 @@ class Contest extends CActiveRecord
 	const TIME_UP = 3; // waktu pengerjaan sudah habis
 	const ENDED = 4; //kontes telah berkahir
 
-	const OPEN = 0;
-	const CLOSED = 1;
-	const CONDITIONAL = 2;
+	const OPEN = 'open';
+	const CLOSED = 'closed';
+	const CONDITIONAL = 'conditional';
 	/**
 	 * @return string the associated database table name
 	 */

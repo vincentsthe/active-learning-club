@@ -4,13 +4,14 @@
 <?php $this->renderPartial('_header',array('model'=>$model)); ?>
 <?php $this->renderPartial('_menubar',array('activeMenuBar'=>'scoreboard')); ?>
 <?php
+	$rank = 0;
 	$gridView = $this->widget('zii.widgets.grid.CGridView',array(
 		'dataProvider'=>$dataProvider,
 		'template'=>"{items}",
 		'columns' => array(
 			array(
-				'name'=>'user_id',
-				'value'=>'$data->user->id',
+				'name'=>'rank',
+				'value'=>function() use ($rank){$rank++; return $rank;}
 			),
 			array(
 				'name'=>'Nama',

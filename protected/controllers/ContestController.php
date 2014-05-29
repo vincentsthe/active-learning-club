@@ -67,7 +67,7 @@ class ContestController extends Controller
 			),
 			//kontestan dan manager yang approved yang boleh melakukan
 			array('allow',
-				'actions'=>array('start','news','problem','scoreboard','image','viewDiscussion'),
+				'actions'=>array('start','news','problem','scoreboard','image','viewDiscussion','loadDiscussionWithAjax'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedContestant'),
 			),
@@ -715,6 +715,33 @@ class ContestController extends Controller
 	}
 
 	/**
+	 * melihat pembahasan kontes
+	 * @param id contest id
+	 */
+	public function actionViewDiscussion($id){
+		$model = $this->loadModel($id);
+		if ($model === null){
+			throw new CHttpException(404,"Contest not found");
+		}
+		$criteria = new CDbCriteria;
+		$criteria->select = 'id';
+		$criteria->condition = 'contest_id=:contest_id';
+		$criteria->params = array('contest_id'=>$id);
+		$problemIdList = Problem::model()->findAll($criteria);
+		$timeLeft = $model->end_time - time();
+		if ($timeLeft > 0){
+			throw new CHttpException(403,"Wait until contest is over");
+		}
+		$this->render('discussion/view',
+			array(
+				'problemIdList'=>$problemIdList,
+				'model'=>$model
+				)
+			);
+
+	}
+
+	/**
 	 * update pembahasan kontes.
 	 */
 	public function actionUpdateDiscussion($id,$page = 0){
@@ -821,10 +848,12 @@ class ContestController extends Controller
 			$contestUser->contest_id = $id;
 			if ($model->isOpen()){
 				$contestUser->approved = 1;
+			} else {
+				$contestUser->approved = 0;
 			}
-			echo $contestUser->user_id;
-			echo $contestUser->contest_id;
-			echo $contestUser->approved;
+			//echo $contestUser->user_id;
+			//echo $contestUser->contest_id;
+			//echo $contestUser->approved;
 			//die("now");
 			$retval = $contestUser->save();
 		}
@@ -904,6 +933,14 @@ class ContestController extends Controller
 		));
 	}
 
+	public function actionLoadDiscussionWithAjax($id,$pId){
+		$contestId = $id;
+		$problemId = $pId;
+		$problemModel = Problem::model()->findByPk($pId);
+		$this->renderPartial('discussion/_view',array(
+			'problem'=>$problemModel,
+		));
+	}
 	public function actionLoadProblemWithAjax($c,$p = 0,$i = 0){
 		$contestId = $c;
 		$problemId = $p;
