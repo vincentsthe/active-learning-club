@@ -59,8 +59,4 @@ Yii::import('ext.Utilities')
 		)
 	)); ?>
 </div>
-<?php Yii::app()->CClientScript->registerScript('koyek',"
-<script>
-</script>
-",CClientScript::POS_END;?>
 <?php $gridView->renderPager(); ?>
