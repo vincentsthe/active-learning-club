@@ -124,7 +124,10 @@ class ContestUser extends CActiveRecord
 	 */
 	public static function isCurrentUserRegistered($contestId){
 		$contestUserModel = ContestUser::model()->getCurrentUserModel($contestId);
-		return $contestUserModel->approved;
+		if ($contestUserModel !== null)
+			return $contestUserModel->approved;
+		else
+			return 0;
 	}
 	/**
 	 *
@@ -135,5 +138,23 @@ class ContestUser extends CActiveRecord
 		$criteria->params = array('contest_id'=>$contestId,'user_id'=>Yii::app()->user->id);
 		$contestUserModel = ContestUser::model()->find($criteria);
 		return $contestUserModel;
+	}
+	/**
+	 * approve current contestant
+	 */
+	public function approveUser(){
+		if ($this !== null){
+			$this->approved = 1;
+			$this->save();
+		}
+	}
+	/**
+	 * deny current contestant
+	 */
+	public function denyUser(){
+		if ($this !== null){
+			$this->approved = 0;
+			$this->save();
+		}
 	}
 }

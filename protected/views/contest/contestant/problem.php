@@ -9,7 +9,9 @@ $firstProblemId = ($problemList === null)?0:$problemList[0]->id;
 $timeLeft = $contestSubModel->end_time - time(); if ($timeLeft < 0) $timeLeft = 0;
 //Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascripts/mathjax.min.js',CClientScript::POS_HEAD);
 Yii::app()->getClientScript()->registerScriptFile("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML");
+Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseUrl . '/javascripts/common/alert-notif.js');
 Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascripts/problem.js',CClientScript::POS_HEAD);
+Yii::app()->session['view_as'] = User::CONTESTANT;
 ?>
 
 <?php $this->renderPartial('_header',array('model'=>$model)); ?>
@@ -30,17 +32,24 @@ Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascri
 <div class="pull-left">
 <br>
 <?php
-	echo CHtml::ajaxSubmitButton(
-		'Simpan Jawaban',
-		CController::createUrl('contest/submitAnswerWithAjax',array('contestSubId'=>$contestSubModel->id)),
-		array('success'=>'nSS()'),
-		array('class'=>'btn btn-success')
-	);
+	if ($timeLeft > 0){
+		echo CHtml::ajaxSubmitButton(
+			'Simpan Jawaban',
+			CController::createUrl('contest/submitAnswerWithAjax',array('contestSubId'=>$contestSubModel->id)),
+			array(
+				'success'=>"function(){notif('Jawaban berhasil disimpan.','server-info','alert-success');}",
+				'error'=>"function(){notif('ERROR : Silakan klik ulang atau refresh (tekan F5)','server-info','alert-danger');}",
+								 //kalo ditulis infoSend() doang gak jalan.
+			),
+			array(
+				'class'=>'btn btn-success',
+				'onclick'=>"notif('Menyimpan...','server-info','alert-info')",
+			)
+		);
+	}
 ?>
 </div>
-
-<div class="clear"></div>
-<div id="server-info"></div>
+<div class="clearfix"></div>
 <div class="pull-left">Sisa : <span id="timer"></span></div><div class="pull-right">Keterangan Poin: [Benar/Salah/Kosong]</div><br><br>
 <?php 
 	$iterator = 0;

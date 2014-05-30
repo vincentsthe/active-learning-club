@@ -2,54 +2,27 @@
 /* @var $this ContestController */
 /* @var $model Contest */
 /* @var $form CActiveForm */
+/* WARNING : pastikan filter['xxx']  xxx sesuai nama attribut database */
 ?>
-
-<div class="wide form">
-
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'action'=>Yii::app()->createUrl($this->route),
-	'method'=>'get',
-)); ?>
-
-	<div class="row">
-		<?php echo $form->label($model,'id'); ?>
-		<?php echo $form->textField($model,'id'); ?>
+<?php echo CHtml::beginForm(); ?>
+<div class="col-xs-12">
+	<div class="col-xs-4">
+		<?php
+			echo "<b>Bidang:</b><br>";
+			$listBidang[0] = 'semua'; //tambahan
+			echo CHtml::dropDownList('filter[bidang]',isset($filter['bidang'])?$filter['bidang']:0,$listBidang,array('class'=>'form-control'));
+		?>
 	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'title'); ?>
-		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>127)); ?>
+	<div class="col-xs-4">
+		<?php echo "<b>Judul:</b>"; ?>
+		<?php echo CHtml::textField("filter[title]",(isset($filter['title']))?$filter['title']:'',array('class'=>'form-control')); ?>
+			<br>		
 	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'start_time'); ?>
-		<?php echo $form->textField($model,'start_time',array('size'=>10,'maxlength'=>10)); ?>
+	<div class="col-xs-4">
+		<br>
+		<?php echo CHtml::submitButton("Cari",array('class'=>'btn btn-primary')); ?>	
 	</div>
+<?php echo CHtml::endForm(); ?>
 
-	<div class="row">
-		<?php echo $form->label($model,'end_time'); ?>
-		<?php echo $form->textField($model,'end_time',array('size'=>10,'maxlength'=>10)); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'duration'); ?>
-		<?php echo $form->textField($model,'duration'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'correct_score'); ?>
-		<?php echo $form->textField($model,'correct_score'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->label($model,'wrong_score'); ?>
-		<?php echo $form->textField($model,'wrong_score'); ?>
-	</div>
-
-	<div class="row buttons">
-		<?php echo CHtml::submitButton('Search'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
-
-</div><!-- search-form -->
+</div>
+<div class="clearfix"> </div><!-- search-form -->

@@ -34,9 +34,12 @@ Yii::import('ext.Utilities')
 				'sortable'=>true,
 				),
 			array(
-				'name'=>'Pengumpul',
+				'name'=>'Username',
 				'value'=>'$data->user->username',
-				'sortable'=>1,
+				),
+			array(
+				'name'=>'Name',
+				'value'=>'$data->user->fullname',
 				),
 			'score',
 			'correct',
