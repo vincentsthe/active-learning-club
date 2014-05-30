@@ -1,5 +1,7 @@
 <?php
 
+Yii::import('ext.Utilities');
+
 /**
  * This is the model class for table "contest".
  *

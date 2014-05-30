@@ -1,6 +1,16 @@
-.buildpath
+.gitignore
+protected/runtime/
+*~
+*~.log
+.settings
+.cache
 .project
-.settings/
-assets/
-images/uploaded
+.classpath
+.scala_dependencies
+bin
+target
+.target
+.project
+.buildpath
 
+images/essay

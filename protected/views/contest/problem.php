@@ -48,6 +48,7 @@ $isEnded = (bool) ($endTime < time());
 	<?php 
 	// line ini ntar diganti
 	//  if tipe soal == pilihan ganda
+	echo "asd";
 	if ($problem->isMultipleChoice()){
 		for($opt='a',$answerValue = 1;$opt <= 'e';$opt++,$answerValue++){
 			echo "<div>";
@@ -66,9 +67,17 @@ $isEnded = (bool) ($endTime < time());
 		echo "<span class='col-md-1'>Answer</span>";
 		echo "<span class='col-md-9'><input type='text' name='answer-$problem->id' class='form-control' rel='$problem->id' value='$problem->answer'><span>";
 		echo "</div>";
+	} else if($problem->isEssay()) {
+		echo "asdf";
+		echo "<div>";
+			echo "<form enctype='multipart/form-data' method='post'>";
+				echo "<div>";
+					echo "<input type='file' name='answerFile'>";
+				echo "</div>";
+			echo "</form>";
+		echo "</div>";
 	}
 	?>
-	</input>
 <div class="clearfix"></div>
 </div>
 <?php endforeach; ?>

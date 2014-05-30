@@ -51,4 +51,8 @@ class Utilities {
 		return Yii::app()->basePath . '/../images/uploaded/';
 	}
 	
+	public function getEssaySubmissionPath() {
+		return Yii::app()->basePath . '/../images/essay/';
+	}
+	
 }

@@ -205,13 +205,13 @@ class ContestSubmission extends CActiveRecord
 	 * generate submission for contest submission model
 	 * @param CActiveRecord ContestSubmission model
 	 */
-	public function generateSubmissions($contestSubModel){
-		$problemList = Contest::model()->getAllProblem();
+	public function generateSubmissions(){
+		$problemList = Contest::model()->findByPk($this->contest_id)->getAllProblem();
 		foreach($problemList as $problem){
 			$submission = new Submission;
-			$submission->answer = '';
 			$submission->problem_id = $problem->id;
-			$submission->contest_submission_id = $contestSubModel->id;
+			$submission->contest_submission_id = $this->id;
+			$submission->save();
 		}
 	}
 }

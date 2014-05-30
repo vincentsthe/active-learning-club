@@ -51,13 +51,19 @@ Yii::import('ext.Utilities')
 			array(
 				'type'=>'raw',
 				'value'=>function($data)
-						{return CHtml::link(
+					{
+						return CHtml::link(
 							'<span class="glyphicon glyphicon-remove"></span>',
 							CController::createUrl('contest/removeContestSubmission',array(
 								'id'=>$data->contest_id,
 								'contestSubId'=>$data->id,
 							)),
-							array('onclick'=>'return confirm("Anda yakin ingin menghapus jawaban ini?")'));}
+							array('onclick'=>'return confirm("Anda yakin ingin menghapus jawaban ini?")')) . " " .
+							CHtml::link('<span class="glyphicon glyphicon-edit"></span>', CController::createUrl('contest/gradeSubmission',array(
+								'id'=>$data->contest_id,
+								'contestSubId'=>$data->id,
+							)));
+					}
 				),
 		),
 		'itemsCssClass' => 'table',

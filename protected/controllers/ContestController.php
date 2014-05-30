@@ -61,20 +61,20 @@ class ContestController extends Controller
 			),
 			//hanya approved teacher yang boleh melakukan
 			array('allow',
-				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading','image','removeContestSubmission'),
+				'actions'=>array('delete','update','scoring','grading','contestant','updateDiscussion','updateContestProblem','viewContestProblem','removeContestant','addContestant','grading','image','removeContestSubmission','gradeSubmission'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedTeacher'),
 			),
 			//kontestan dan manager yang approved yang boleh melakukan
 			array('allow',
-				'actions'=>array('start','news','problem','scoreboard','image'),
+				'actions'=>array('start','news','problem','scoreboard','image','submitEssay'),
 				'users'=>array('@'),
 				'expression'=>array('ContestController','isApprovedContestant'),
 			),
 			//dua ini gw special case karena males banget (pake jquery dia)
 			//bisa jadi loophole security (misal kebanyakan diklik. tapi enggak lah ya)
 			array('allow',
-				'actions'=>array('submitAnswerWithAjax','loadProblemWithAjax','loadProblem','submitAnswer','image'),
+				'actions'=>array('submitAnswerWithAjax','loadProblemWithAjax','loadProblem','submitAnswer','image','submitEssay','downloadAnswer'),
 				'users'=>array('@'),
 			),
 			//hanya apporved
@@ -189,6 +189,10 @@ class ContestController extends Controller
 				$newContest->type = $model->type;
 
 				if($newContest->validate() && $newContest->save()) {
+					if($newContest->type == "essay") {
+						mkdir(Utilities::getEssaySubmissionPath() . $newContest->id);
+					}
+					
 					//insert the current creator into ContestUserSchema
 					$contestUserModel = new ContestUser;
 					$contestUserModel->user_id = Yii::app()->user->id;
@@ -687,6 +691,38 @@ class ContestController extends Controller
 			));
 
 	}
+	
+	public function actionGradeSubmission($id, $contestSubId) {
+		$model = $this->loadModel($id);
+		if ($model === null){
+			throw new CHttpException(404,"Contest not found");
+		}
+		
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'contest_id=:contest_id';
+		$criteria->params = array('contest_id'=>$id);
+		
+		$submissionCriteria = new CDbCriteria;
+		$submissionCriteria->condition = 'contest_submission_id=:contest_submission_id';
+		$submissionCriteria->params = array('contest_submission_id'=>$contestSubId);
+		
+		$count = Problem::model()->count($criteria);
+		
+		$listProblem = Problem::model()->findAll($criteria);
+		$listSubmission = Submission::model()->findAll($submissionCriteria);
+		
+		if(isset($_POST['Submission'])) {
+			foreach($listSubmission as $i=>$submission) {
+				if(isset($_POST['Submission'][$i])) {
+					$submission->attributes = $_POST['Submission'][$i];
+					$submission->save();
+				}
+			}
+		}
+		
+		$this->render('gradeSubmission', array('listProblem'=>$listProblem, 'contest'=>$model, 'listSubmission'=>$listSubmission));
+		
+	}
 
 	/**
 	 * update pembahasan kontes.
@@ -801,6 +837,9 @@ class ContestController extends Controller
 			echo $contestUser->approved;
 			//die("now");
 			$retval = $contestUser->save();
+			if($model->type == "essay") {
+				mkdir(Utilities::getEssaySubmissionPath() . $id . "/" . Yii::app()->user->id);
+			}
 		}
 		$this->redirect(array('view','id'=>$id));
 	}
@@ -843,6 +882,8 @@ class ContestController extends Controller
 			exit;
 		}
 		
+		$fileForm = new FileForm;
+		
 		$problemList = $model->getAllProblem();
 		$contestSubModel = ContestSubmission::model()->getCurrentUserModel($id);
 		$submissions = $contestSubModel->getAllSubmissionIndexed();
@@ -852,6 +893,7 @@ class ContestController extends Controller
 			'numberOfProblems'=>count($problemList),
 			'contestSubModel'=>$contestSubModel,
 			'submissions'=>$submissions,
+			'fileForm'=>$fileForm,
 		));
 	}
 
@@ -972,6 +1014,64 @@ class ContestController extends Controller
 	 */
 	public function isAdmin(){
 		return Yii::app()->user->isAdmin;
+	}
+	
+	public function actionSubmitEssay($contestId, $userId, $problemId) {
+		if(isset($_POST['FileForm'])) {
+			$fileForm = new FileForm;
+			
+			$fileForm->attributes = $_POST['FileForm'];
+			$fileForm->file = CUploadedFile::getInstance($fileForm, 'file');
+			$name = $fileForm->file->getName();
+			
+			if($fileForm->file->getSize() > 2.5 * 1024 *1024) {
+				Yii::app()->user->setFlash('error', 'Ukuran file terlalu besar.');
+			} else if($fileForm->validate()) {
+				if(!file_exists(Utilities::getEssaySubmissionPath() . $contestId . "/" . $userId . "/" . $problemId)) {
+					mkdir(Utilities::getEssaySubmissionPath() . $contestId . "/" . $userId . "/" . $problemId);
+				}
+				
+				$criteria = new CDbCriteria;
+				$criteria->condition = "contest_id=" . $contestId . " AND user_id=" . $userId;
+				$criteria->params = array('contest_id'=>$contestId, 'user_id'=>$userId);
+				$contestSubmission = ContestSubmission::model()->find($criteria);
+				
+				$subCriteria = new CDbCriteria;
+				$subCriteria->condition = "problem_id=:problem_id AND contest_submission_id=:contest_submission_id";
+				$subCriteria->params = array("problem_id"=>$problemId, "contest_submission_id"=>$contestSubmission->id);
+				$submission = Submission::model()->find($subCriteria);
+				
+				if($submission->answer != null) {
+					unlink(Utilities::getEssaySubmissionPath() . $contestId . "/" . $userId . "/" . $problemId . "/" . $problem->answer);
+				}
+				
+				$fileForm->file->saveAs(Utilities::getEssaySubmissionPath() . $contestId . "/" . $userId . "/" . $problemId . "/" . "$name");
+				
+				$submission->answer = $name;
+				$submission->save();
+				
+				Yii::app()->user->setFlash('success', 'File berhasil diupload.');
+			} else {
+				Yii::app()->user->setFlash('error', 'File gagal diupload.');
+			}
+		}
+		
+		$this->redirect(array("problem", "id"=>$contestId));
+	}
+	
+	public function actionDownloadAnswer($contestId, $userId, $problemId) {
+		$criteria = new CDbCriteria;
+		$criteria->condition = "contest_id=" . $contestId . " AND user_id=" . $userId;
+		$criteria->params = array('contest_id'=>$contestId, 'user_id'=>$userId);
+		$contestSubmission = ContestSubmission::model()->find($criteria);
+		
+		$subCriteria = new CDbCriteria;
+		$subCriteria->condition = "problem_id=:problem_id AND contest_submission_id=:contest_submission_id";
+		$subCriteria->params = array("problem_id"=>$problemId, "contest_submission_id"=>$contestSubmission->id);
+		$submission = Submission::model()->find($subCriteria);
+		
+		header('Content-Disposition: attachment; filename="' . $submission->answer . '"');
+		readfile(Utilities::getEssaySubmissionPath() . $contestId . "/" . $userId . "/" . $problemId . "/" . $submission->answer);
 	}
 
 	/**

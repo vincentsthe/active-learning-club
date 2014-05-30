@@ -24,7 +24,7 @@ return array(
 		
 		'gii'=>array(
 			'class'=>'system.gii.GiiModule',
-			'password'=>'akuganteng',
+			'password'=>'rahasia',
 			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('127.0.0.1','::1'),
 		),
@@ -66,7 +66,7 @@ return array(
 			'connectionString' => 'mysql:host=localhost;dbname=db_alc',
 			'emulatePrepare' => true,
 			'username' => 'root',
-			'password' => 'akuganteng',
+			'password' => 'rahasia',
 			'charset' => 'utf8',
 		),
 		'errorHandler'=>array(

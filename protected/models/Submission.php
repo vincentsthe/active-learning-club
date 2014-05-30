@@ -31,8 +31,7 @@ class Submission extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('problem_id, contest_submission_id', 'required'),
-			array('problem_id, contest_submission_id', 'numerical', 'integerOnly'=>true),
+			array('problem_id, contest_submission_id, score', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, problem_id, contest_submission_id, answer', 'safe', 'on'=>'search'),

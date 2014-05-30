@@ -15,7 +15,18 @@ Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascri
 <?php $this->renderPartial('_header',array('model'=>$model)); ?>
 <?php $this->renderPartial('_menubar',array('activeMenuBar'=>'problem')); ?>
 <div class="clear"></div>
-<?php echo CHtml::beginForm(); ?>
+<?php if(Yii::app()->user->hasFlash('error')): ?>
+	<div class="alert alert-danger">
+		<?php echo Yii::app()->user->getFlash('error'); ?>
+	</div>
+<?php endif;?>
+
+<?php if(Yii::app()->user->hasFlash('success')): ?>
+	<div class="alert alert-success">
+		<?php echo Yii::app()->user->getFlash('success'); ?>
+	</div>
+<?php endif;?>
+<?php if($model->type != "essay") echo CHtml::beginForm(); ?>
 <div class="pull-left">
 <br>
 <?php
@@ -54,8 +65,8 @@ Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascri
 		?>
 	<div class="p-container" rel="<?php echo $problem->id ?>">
 	<?php 
-			$this->renderPartial('contestant/_loadProblemGeneral',array('problem'=>$problem,'indexNo'=>$iterator));
-			$this->renderPartial('contestant/_loadAnswerGeneral',array('problem'=>$problem,'indexNo'=>$iterator,'submission'=>(isset($submissions[$problem->id]))?$submissions[$problem->id]:null));
+			$this->renderPartial('contestant/_loadProblemGeneral',array('problem'=>$problem,'indexNo'=>$iterator, 'contest'=>$model));
+			$this->renderPartial('contestant/_loadAnswerGeneral',array('problem'=>$problem,'indexNo'=>$iterator, 'contest'=>$model,'fileForm'=>$fileForm,'submission'=>(isset($submissions[$problem->id]))?$submissions[$problem->id]:null));
 	?>
 	</div>
 	</div>
@@ -70,7 +81,7 @@ Yii::app()->getClientScript()->registerScriptFile(Yii::app()->baseURL.'/javascri
 		array('class'=>'btn btn-success')
 	);
 ?>
-<?php echo CHtml::endForm(); ?>
+<?php if($model->type != "essay") echo CHtml::endForm(); ?>
 <script>var firstProblemId = <?php echo $firstProblemId; ?></script>
 <?php 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseURL.'/javascripts/timer.js',CClientScript::POS_END);
