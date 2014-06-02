@@ -54,8 +54,10 @@ return array(
 			'showScriptName'=>false,
 			'rules'=>array(
 				'<action>'=>'site/<action>',
-				'contest/<id:\d+>/<action>'=>'contest/<action>',
+				//ini buat kayak updateContestProblem, viewContestProblem, viewSubmission dst.
 				'contest/<id:\d+>/<action>/<mode:(create|update|view|add|remove)>'=>'contest/<mode><action>',
+				'contest/<id:\d+>/<action>'=>'contest/<action>',
+				//sampah2 dari yii.
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

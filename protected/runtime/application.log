@@ -9472,3 +9472,9 @@ in C:\xampp\htdocs\alc-total\index.php (15)
 2014/06/02 22:37:42 [warning] [application] Failed to set unsafe attribute "type" of "ContestForm".
 in C:\xampp\htdocs\alc-total\protected\controllers\ContestController.php (232)
 in C:\xampp\htdocs\alc-total\index.php (15)
+2014/06/02 23:00:53 [warning] [application] Failed to set unsafe attribute "id" of "ContestForm".
+in C:\xampp\htdocs\alc-total\protected\controllers\ContestController.php (232)
+in C:\xampp\htdocs\alc-total\index.php (15)
+2014/06/02 23:00:53 [warning] [application] Failed to set unsafe attribute "type" of "ContestForm".
+in C:\xampp\htdocs\alc-total\protected\controllers\ContestController.php (232)
+in C:\xampp\htdocs\alc-total\index.php (15)
