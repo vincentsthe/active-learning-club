@@ -63,6 +63,14 @@ $this->breadcrumbs=array(
 		<?php echo $form->textField($model,'school',array('class'=>'form-control','placeholder'=>'asal sekolah')); ?>
 		<?php echo $form->error($model,'school',array('style'=>'color:red')); ?>
 	<!-- <br> -->
+		<?php if(CCaptcha::checkRequirements()): ?>
+			<?php echo $form->labelEx($model,'verifyCode'); ?>
+			<br>
+			<?php $this->widget('CCaptcha'); ?>
+			<?php echo $form->textField($model,'verifyCode'); ?>	
+			<div class="hint">Masukkan huruf-huruf di atas</div>
+			<?php echo $form->error($model,'verifyCode',array('style'=>'color:red')); ?>
+		<?php endif; ?>
 	<br>
 	<div class="row buttons">
 		<center><?php echo CHtml::submitButton('Register',array('class'=>'btn btn-primary')); ?></center>

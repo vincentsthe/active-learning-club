@@ -98,7 +98,7 @@ class ContestController extends Controller
 		$contestantList = ContestUser::model()->with('user')->findAll("contest_id=$id");
 		
 		
-		$this->render('view',array(
+		$this->render('dashboard/view',array(
 			'model'=>$model,
 			'contestantList' => $contestantList,
 			'contestStatus' => $contestStatus,
@@ -145,7 +145,7 @@ class ContestController extends Controller
 		}
 		$criteria->with = $joinTable;
 		$listProblem = Problem::model()->findAll($criteria);
-		$this->render('viewContestProblem', array(
+		$this->render('problem/review', array(
 			'listProblem' => $listProblem,
 			'page' => $page,
 			'pagination' => $pages,
@@ -371,7 +371,7 @@ class ContestController extends Controller
 				)
 			));
 		}
-		$this->render('contestant',array(
+		$this->render('contestant/manage',array(
 			'model'=>$model,
 			'contestUserList'=>$contestUserList,
 			'userSearchList'=>$userSearchList,
@@ -384,7 +384,7 @@ class ContestController extends Controller
 	 * @param id the contest idnumber
      */
 	public function actionScoreboard($id){
-		
+		Yii::app()->session['view_as'] = User::CONTESTANT;
 		$this->active="scoreboard";
 		if (!isset($id)){
 			throw new CHttpException(404,"Halaman tidak ditemukan");
@@ -402,8 +402,9 @@ class ContestController extends Controller
 		// 	'criteria'=>$criteria,
 		// ));
 		$criteria = new CDbCriteria; 
-		$criteria->with = 'user'; $criteria->together = true;
+		$criteria->with = array('user','total_score'); $criteria->together = true;
 		$criteria->condition = "contest_id=$id";
+		$criteria->order = 'score ASC';
 		$dataProvider = new CActiveDataProvider('ContestSubmission',array(
 			'criteria'=>$criteria,
 			'sort'=>array(
@@ -415,6 +416,10 @@ class ContestController extends Controller
 					'sekolah'=>array(
 						'asc'=>'school',
 						'desc'=>'school desc',
+						),
+					'Nilai'=>array(
+						'asc'=>'score',
+						'desc'=>'score DESC',
 						),
 					'*',
 					),
@@ -429,7 +434,7 @@ class ContestController extends Controller
 		// 	echo "<br>";
 		// }
 		$contestModel = Contest::model()->findByPk($id);
-		$this->render('scoreboard',array(
+		$this->render('scoreboard/view',array(
 			'dataProvider'=>$dataProvider,
 			'id'=>$id,
 			'model'=>$contestModel,
@@ -467,7 +472,7 @@ class ContestController extends Controller
 				$problem->save();
 			}
 		}
-		$this->render('scoring',array(
+		$this->render('scoring/manage',array(
 			'model'=>$model,
 			'listProblem'=>$listProblem,
 			));
@@ -567,7 +572,7 @@ class ContestController extends Controller
 			}
 		}
 		
-		$this->render('updateContestProblem', array('listProblemData'=>$listProblemData, 'model'=>$contest, 'page'=>$page, 'pagination'=>$pages,'controllerAction'=>'updateContestProblem'));
+		$this->render('problem/manage', array('listProblemData'=>$listProblemData, 'model'=>$contest, 'page'=>$page, 'pagination'=>$pages,'controllerAction'=>'updateContestProblem'));
 	}
 	
 	public function actionRank($id) {
@@ -689,7 +694,9 @@ class ContestController extends Controller
 				'criteria'=>array(
 					'condition'=>'contest_id=:contest_id',
 					'params'=>array('contest_id'=>$id),
-					'with'=>array('user'),
+					'with'=>array('user','total_score'),
+					'together'=>true,
+					//'with'=>array('user','submissions'),
 					),
 				'pagination'=>array(
 					'pageSize'=>20,
@@ -701,18 +708,22 @@ class ContestController extends Controller
 							'desc'=>'username DESC',
 							),
 						'Name'=>array(
-							'asc'=>'username',
-							'desc'=>'username DESC',
+							'asc'=>'fullname',
+							'desc'=>'fullname DESC',
 							),
 						'sekolah'=>array(
 							'asc'=>'school',
 							'desc'=>'school desc',
 							),
+						'Total Score'=>array(
+							'asc'=>'score',
+							'asc'=>'score DESC',
+							),
 						'*',
 						),
 				),
 			));
-		$this->render('grading',array(
+		$this->render('submission/index',array(
 			'model'=>$model,
 			'dataProvider'=>$dataProvider,
 			));
@@ -747,7 +758,7 @@ class ContestController extends Controller
 			}
 		}
 		
-		$this->render('gradeSubmission', array('listProblem'=>$listProblem, 'contest'=>$model, 'listSubmission'=>$listSubmission));
+		$this->render('submission/manualGrading', array('listProblem'=>$listProblem, 'contest'=>$model, 'listSubmission'=>$listSubmission));
 		
 	}
 
@@ -782,6 +793,7 @@ class ContestController extends Controller
 	 * update pembahasan kontes.
 	 */
 	public function actionUpdateDiscussion($id,$page = 0){
+		$this->active = 'contest/index';
 		$model = $this->loadModel($id);
 		if ($model === null){
 			throw new CHttpException(404,"Contest not found");
@@ -837,7 +849,7 @@ class ContestController extends Controller
 
 		$listAnnouncement = ContestAnnouncement::model()->findAll($criteria);
 		$model = $this->loadModel($id);
-		$this->render('news',array(
+		$this->render('news/view',array(
 			'model'=>$model,
 			'listAnnouncement'=>$listAnnouncement,
 			'id'=>$id,
@@ -964,7 +976,14 @@ class ContestController extends Controller
 		$fileForm = new FileForm;
 		
 		$problemList = $model->getAllProblem();
+		if (count($problemList) == 0){
+			throw new CHttpException(404,"This contest doesn't have any problem.");
+		}
 		$contestSubModel = ContestSubmission::model()->getCurrentUserModel($id);
+		if ($contestSubModel === null){
+			$contestSubModel = ContestSubmission::model()->create($id,Yii::app()->user->id);
+		}
+
 		$submissions = $contestSubModel->getAllSubmissionIndexed();
 		$this->render('contestant/problem', array(
 			'problemList'=>$problemList,
@@ -1007,7 +1026,7 @@ class ContestController extends Controller
 		 	}
 		 	$problem = Problem::model()->with($joinTable)->findByPk($problemId);
 		 	if ($problem->contest_id == $contestId){
-		 		$this->renderPartial('contestant/_loadProblemGeneral',array('problem'=>$problem,'indexNo'=>$indexNo));
+		 		$this->renderPartial('problem/_loadProblemGeneral',array('problem'=>$problem,'indexNo'=>$indexNo));
 		 	}
 		}
 	}
@@ -1249,7 +1268,7 @@ class ContestController extends Controller
 				
 		}
 	
-		$this->render('image',array(
+		$this->render('image/index',array(
 				'dataProvider'=>$dataProvider,
 				'imageForm'=>$imageForm,
 				'model'=>$contest,

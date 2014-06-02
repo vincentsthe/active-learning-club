@@ -3,6 +3,7 @@
 class SiteController extends Controller
 {
 	public $layout = '//layouts/guestLayout';
+	public $defaultAction = 'register';
 	public $active;
 	public $topBarActive;
 	//untuk topBarActive yang buat static page (about,contact, dll)

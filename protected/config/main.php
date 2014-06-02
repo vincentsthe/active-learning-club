@@ -68,7 +68,7 @@ return array(
 			'connectionString' => 'mysql:host=localhost;dbname=db_alc',
 			'emulatePrepare' => true,
 			'username' => 'root',
-			'password' => 'rahasia',
+			'password' => 'akuganteng',
 			'charset' => 'utf8',
 		),
 		'errorHandler'=>array(

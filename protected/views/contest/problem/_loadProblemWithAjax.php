@@ -1,0 +1,1 @@
+<?php echo $problem->id." ".$problem->content; ?>

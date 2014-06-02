@@ -13,6 +13,7 @@ class RegisterForm extends CFormModel
 	public $email;
 	public $fullname;
 	public $school;
+	public $verifyCode;
 
 	/**
 	 * Declares the validation rules.
@@ -27,6 +28,7 @@ class RegisterForm extends CFormModel
 			array('username, password, fullname, school, email', 'required'),
 			array('username, password, fullname, school, email', 'length', 'max'=>127),
 			array('repeat_password','compare','compareAttribute'=>'password'),
+			array('verifyCode', 'captcha', 'allowEmpty'=>!CCaptcha::checkRequirements()),
 		);
 	}
 
@@ -42,6 +44,7 @@ class RegisterForm extends CFormModel
 			'email' => 'Email',
 			'fullname' => 'Nama lengkap',
 			'school' => 'Asal Sekolah',
+			'verifyCode'=>'Kode Verifikasi',
 		);
 	}
 

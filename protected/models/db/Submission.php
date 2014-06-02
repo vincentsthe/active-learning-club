@@ -92,6 +92,27 @@ class Submission extends CActiveRecord
 		));
 	}
 
+	public function grade(){
+		$problem = Problem::model()->findByPk($this->problem_id);
+		if ($problem !== null){
+			if ($problem->isMultipleChoice() || $problem->isShortAnswer()){
+				//echo $this->answer.' '.$problem->answer."<br>";
+				if ($this->answer == ''){
+				//	echo 'blank';
+					$this->score = $problem->blank_score;
+				} else if ($this->answer == $problem->answer){
+				//	echo 'correct';
+					$this->score = $problem->correct_score;
+				} else {
+				//	echo 'wrong';
+					$this->score = $problem->wrong_score;
+				}
+				//echo $this->score;
+				$this->save();
+			}
+		}
+		
+	}
 	/**
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
@@ -102,4 +123,6 @@ class Submission extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+
 }

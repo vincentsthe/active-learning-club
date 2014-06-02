@@ -58,6 +58,7 @@ class ContestSubmission extends CActiveRecord
 			'contest' => array(self::BELONGS_TO, 'Contest', 'contest_id'),
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 			'submissions' => array(self::HAS_MANY, 'Submission', 'contest_submission_id'),
+			'total_score'=>array(self::STAT,'Submission','contest_submission_id','select'=>'SUM(score)'),
 		);
 	}
 
@@ -134,6 +135,10 @@ class ContestSubmission extends CActiveRecord
 		$blankAnswer = 0;
 		$totalScore = 0;
 		
+		foreach($listSubmission as $submission)
+			$submission->grade();
+		
+		/*
 		foreach($listSubmission as $submission) {
 			$problem = $submission->problem;
 
@@ -148,7 +153,7 @@ class ContestSubmission extends CActiveRecord
 				$totalScore += $problem->wrong_score;
 			}
 		}
-		
+		*/
 		$this->score = $totalScore;
 		$this->correct = $correctAnswer;
 		$this->wrong = $wrongAnswer;
@@ -172,6 +177,19 @@ class ContestSubmission extends CActiveRecord
 			$submission->delete();
 		}
 		return Parent::beforeDelete();
+	}
+
+	/**
+	 * create contest submission
+	 * @param contestId int contest id
+	 * @param userId int user id
+	 */
+	public function create($contestId,$userId){
+		$model = new ContestSubmission;
+		$model->contest_id = $contestId;
+		$model->user_id = $userId;
+		$model->save();
+		return $model;
 	}
 
 	/**
