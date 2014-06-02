@@ -17,5 +17,9 @@ $this->menu=array(
 ?>
 
 <h1>Update User <?php echo $model->id; ?></h1>
-
+<?php
+    foreach(Yii::app()->user->getFlashes() as $key => $message) {
+        echo '<div class="alert alert-' . $key . '">' . $message . "</div>\n";
+    }
+?>
 <?php $this->renderPartial('_form', array('model'=>$model)); ?>

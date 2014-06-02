@@ -185,10 +185,14 @@ class ContestSubmission extends CActiveRecord
 	 * @param userId int user id
 	 */
 	public function create($contestId,$userId){
+		$contestModel = Contest::model()->findByPk($contestId);
 		$model = new ContestSubmission;
 		$model->contest_id = $contestId;
 		$model->user_id = $userId;
+		$model->start_time = time();
+		$model->end_time = min($contestModel->end_time,$model->start_time + $contestModel->duration*60); 
 		$model->save();
+		$model->started = true;
 		return $model;
 	}
 

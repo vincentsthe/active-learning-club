@@ -40,6 +40,7 @@ class UserController extends Controller
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('admin','delete','index','view','create','update'),
 				'users'=>array('@'),
+				'expression'=>array('UserController','isAdmin'),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -103,8 +104,13 @@ class UserController extends Controller
 		{
 			$model->attributes=$_POST['User'];
 			$model->password = sha1($model->password);
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$model->is_admin = $_POST['User']['is_admin'];
+			$model->is_teacher = $_POST['User']['is_teacher'];
+			if ($model->save()){
+				Yii::app()->user->setFlash('success','Data successfully updated');
+			}
+			//if($model->save())
+			//	$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
@@ -177,6 +183,10 @@ class UserController extends Controller
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
+	}
+
+	protected function isAdmin(){
+		return Yii::app()->user->isAdmin;
 	}
 
 	/**

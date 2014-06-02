@@ -42,6 +42,7 @@ class User extends CActiveRecord
 		return array(
 			array('username, password, email, fullname, school', 'required'),
 			array('is_admin, is_teacher', 'numerical', 'integerOnly'=>true),
+			array('email, username', 'unique'),
 			array('username, password, email, fullname, school', 'length', 'max'=>127),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
@@ -132,5 +133,14 @@ class User extends CActiveRecord
 		$user = User::model()->find('username=:username', array('username'=>$this->username));
 		return $user->password == sha1($password);
 	}
+
+	public function isAdmin(){
+		return $this->is_admin == 1;
+	}
+
+	public function isTeacher(){
+		return $this->is_teacher == 1;
+	}
+
 
 }

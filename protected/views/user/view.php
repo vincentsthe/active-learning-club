@@ -26,5 +26,7 @@ $this->menu=array(
 		'password',
 		'fullname',
 		'school',
+		'is_admin',
+		'is_teacher',
 	),
 )); ?>

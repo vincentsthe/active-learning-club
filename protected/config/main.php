@@ -8,7 +8,7 @@
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'ALC Contest Management System',
-	'defaultController' => 'contest/index',
+	'defaultController' => 'site/register',
 
 	// preloading 'log' component
 	'preload'=>array('log'),
@@ -51,8 +51,11 @@ return array(
 		),*/
 		'urlManager'=>array(
 			'urlFormat'=>'path',
+			'showScriptName'=>false,
 			'rules'=>array(
+				'<action>'=>'site/<action>',
 				'contest/<id:\d+>/<action>'=>'contest/<action>',
+				'contest/<id:\d+>/<action>/<mode:(create|update|view|add|remove)>'=>'contest/<mode><action>',
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

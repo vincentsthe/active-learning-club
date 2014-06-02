@@ -332,12 +332,7 @@ class ContestController extends Controller
 			$startTime = $timeNow;
 			$endTime = min($contestModel->end_time,$startTime + $contestModel->duration * 60);
 
-			$contestSubmission->contest_id = $id;
-			$contestSubmission->user_id = Yii::app()->user->id;
-			$contestSubmission->started = 1;
-			$contestSubmission->start_time = $startTime;
-			$contestSubmission->end_time = $endTime;
-			$contestSubmission->save();
+			$contestSubmission = ContestSubmission::model()->create($id,Yii::app()->user->id);
 			$contestSubmission->generateSubmissions($contestSubmission);
 		}
 		$this->redirect(array('news','id'=>$id));
@@ -717,7 +712,7 @@ class ContestController extends Controller
 							),
 						'Total Score'=>array(
 							'asc'=>'score',
-							'asc'=>'score DESC',
+							'desc'=>'score DESC',
 							),
 						'*',
 						),
@@ -834,7 +829,7 @@ class ContestController extends Controller
 			}
 		}
 		
-		$this->render('teacher/updateDiscussion', array('listProblemData'=>$listProblemData, 'model'=>$model, 'page'=>$page, 'pagination'=>$pages,'controllerAction'=>'updateDiscussion'));
+		$this->render('discussion/update', array('listProblemData'=>$listProblemData, 'model'=>$model, 'page'=>$page, 'pagination'=>$pages,'controllerAction'=>'updateDiscussion'));
 
 	}
 	/**
@@ -985,7 +980,7 @@ class ContestController extends Controller
 		}
 
 		$submissions = $contestSubModel->getAllSubmissionIndexed();
-		$this->render('contestant/problem', array(
+		$this->render('problem/work', array(
 			'problemList'=>$problemList,
 			'model' =>$model,
 			'numberOfProblems'=>count($problemList),

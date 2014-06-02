@@ -49,6 +49,16 @@
 		<?php echo $form->error($model,'school'); ?>
 	</div>
 
+	<div class="row">
+		<b>Rule:</b><br>
+		<?php echo $form->checkBox($model,'is_admin')." admin " ; ?>
+		<?php echo $form->checkBox($model,'is_teacher')." teacher " ; ?>
+	</div>
+
+	<div class="row">
+		
+	</div>
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class'=>'btn btn-primary')); ?>
 	</div>
