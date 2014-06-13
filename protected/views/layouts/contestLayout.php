@@ -10,8 +10,8 @@
 		</div>
 		<div class="panel-body">
 			<ul class="nav nav-pills nav-stacked">
-				<li <?php if(isset($this->active) &&  $this->active == "index"):?>class="active"<?php endif;?>><?php echo CHtml::link("Daftar User", array('user/index'))?></li>
-				<li <?php if(isset($this->active) &&  $this->active == "create"):?>class="active"<?php endif;?>><?php echo CHtml::link("Buat User Baru", array('user/create'))?></li>
+				<li <?php if(isset($this->active) &&  $this->active == "index"):?>class="active"<?php endif;?>><?php echo CHtml::link("Daftar User", array('admin/user/index'))?></li>
+				<li <?php if(isset($this->active) &&  $this->active == "create"):?>class="active"<?php endif;?>><?php echo CHtml::link("Buat User Baru", array('admin/user/create'))?></li>
 			</ul>
 		</div>
 	</div>

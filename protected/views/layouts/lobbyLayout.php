@@ -12,8 +12,8 @@
 		</div>
 		<div class="panel-body">
 			<ul class="nav nav-pills nav-stacked">
-				<li <?php if(isset($this->active) &&  $this->active == "user/index"):?>class="active"<?php endif;?>><?php echo CHtml::link("Daftar User", array('user/index'))?></li>
-				<li <?php if(isset($this->active) &&  $this->active == "user/create"):?>class="active"<?php endif;?>><?php echo CHtml::link("Buat User Baru", array('user/create'))?></li>
+				<li <?php if(isset($this->active) &&  $this->active == "user/index"):?>class="active"<?php endif;?>><?php echo CHtml::link("Daftar User", array('//admin/user/index'))?></li>
+				<li <?php if(isset($this->active) &&  $this->active == "user/create"):?>class="active"<?php endif;?>><?php echo CHtml::link("Buat User Baru", array('//admin/user/create'))?></li>
 			</ul>
 		</div>
 	</div>
@@ -26,8 +26,8 @@
 		</div>
 		<div class="panel-body">
 			<ul class="nav nav-pills nav-stacked">
-				<li <?php if(isset($this->active) && $this->active == "contest/index"):?>class="active"<?php endif;?>><?php echo CHtml::link("Atur Kontes", array('contest/index'))?></li>
-				<li <?php if(isset($this->active) && $this->active == "contest/create"):?>class="active"<?php endif;?>><?php echo CHtml::link("Buat Kontes Baru", array('contest/create'))?></li>
+				<li <?php if(isset($this->active) && $this->active == "contest/index"):?>class="active"<?php endif;?>><?php echo CHtml::link("Atur Kontes", array('teacher/contest/index'))?></li>
+				<li <?php if(isset($this->active) && $this->active == "contest/create"):?>class="active"<?php endif;?>><?php echo CHtml::link("Buat Kontes Baru", array('teacher/contest/create'))?></li>
 			</ul>
 		</div>
 	</div>

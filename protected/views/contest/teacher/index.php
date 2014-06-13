@@ -43,8 +43,6 @@ Yii::import('ext.Utilities')
 				'value'=>function($data) {
 					return 	CHtml::link('<span class="glyphicon glyphicon-search"></span>', array('contest/view', 'id'=>$data->id))." ".
 							CHtml::link('<span class="glyphicon glyphicon-edit"></span>', array('contest/update', 'id'=>$data->id))." ".
-							CHtml::link('<span class="glyphicon glyphicon-th-list"></span>', array('contest/updateContestProblem', 'id'=>$data->id))." ".
-							CHtml::link('<span class="glyphicon glyphicon-bookmark"></span>', array('contest/rank', 'id'=>$data->id))." ".
 							CHtml::link('<span class="glyphicon glyphicon-remove"></span>', array('contest/delete', 'id'=>$data->id), array('onclick'=>'return confirm("Anda yakin ingin menghapus kontes ini?")'));
 				},
 			),

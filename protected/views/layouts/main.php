@@ -30,10 +30,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-1" style="margin-top:10px top bottom;" >
-					<img src="<?php echo Yii::app()->request->baseUrl; ?>/images/header-logo.png" width="70px">
 				</div>
 				<div class="col-xs-10">
-					<h3>ALC Learning Center</h3>
 					<h5>Tempat berlatih menghadapi OSN</h5>
 				</div>
 				

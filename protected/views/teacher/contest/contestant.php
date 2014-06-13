@@ -32,7 +32,7 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 				<td>
 				<?php echo CHtml::ajaxLink(
 					'<span class="glyphicon glyphicon-remove"></span>',
-					CController::createUrl('contest/removeContestantWithAjax',
+					CController::createUrl('teacher/contest/removeContestantWithAjax',
 						array(
 							'id'=>$contestUser->contest_id,
 							'userId'=> $contestUser->user_id,
@@ -51,7 +51,7 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 	<div class="alert" id="approve-info" style="text-align:center; display:none;"></div>
 	<?php echo CHtml::ajaxSubmitButton(
 							'Terima Kontestan',
-							CController::createUrl('contest/approveContestantWithAjax',array('id'=>$model->id)),
+							CController::createUrl('teacher/contest/approveContestantWithAjax',array('id'=>$model->id)),
 							array(
 								'success'=>"function(){notif('Data penerimaan berhasil disimpan.','approve-info','alert-success');}",
 								'error'=>"function(){notif('ERROR : Silakan klik ulang atau refresh (tekan F5)','approve-info','alert-danger');}",
@@ -88,7 +88,7 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/jquer
 					'type' => 'raw',
 					'value' => function($data) use ($model){
 						return CHtml::link('add', array(
-							'contest/addContestant',
+							'teacher/contest/addContestant',
 							'id' => $model->id,
 							'userId' => $data->id,
 						)); 

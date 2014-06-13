@@ -80,7 +80,7 @@ class GradeController extends Controller
 		foreach($problems as $problem){
 			while ($s < $nSubmissions && $submissions[$s]->problem_id < $problem->id ){ $s++;}
 			if ($s < $nSubmissions && $submissions[$s]->problem_id == $problem->id){
-				echo $submissions[$s]->answer." ".$problem->answer."<br>";
+//				echo $submissions[$s]->answer." ".$problem->answer."<br>";
 				if ($submissions[$s]->answer==''){
 					$blank++;
 					$score += $score + $problem->blank_score;
